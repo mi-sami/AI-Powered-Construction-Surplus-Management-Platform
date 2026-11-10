@@ -1,0 +1,203 @@
+{
+  "users": [
+    {
+      "id": "u1",
+      "name": "Rahim Construction Ltd.",
+      "type": "Company",
+      "email": "info@rahimconst.com",
+      "password": "password123",
+      "tradeLicenseNo": "TL-998234",
+      "nidNo": null,
+      "status": "approved"
+    },
+    {
+      "id": "u2",
+      "name": "Karim Builders",
+      "type": "Company",
+      "email": "contact@karimbuilders.com",
+      "password": "password123",
+      "tradeLicenseNo": "TL-441029",
+      "nidNo": null,
+      "status": "approved"
+    },
+    {
+      "id": "-4eTSfRyg0g",
+      "name": "Minhazul Islam Bhuiyan",
+      "type": "Individual",
+      "email": "minhazsami446@gmail.com",
+      "phone": "01537391132",
+      "address": "mirpur",
+      "tradeLicenseNo": null,
+      "nidNo": "232-35-522",
+      "password": "123456",
+      "status": "approved",
+      "createdAt": "2026-10-11"
+    },
+    {
+      "id": "1UJdN57cvLk",
+      "name": "SB Construction",
+      "type": "Company",
+      "email": "sathibegum2863@gmail.com",
+      "phone": "01571501447",
+      "address": "Pagla,Gafargaon,Mymensingh",
+      "tradeLicenseNo": "027888963541385555",
+      "nidNo": null,
+      "password": "123456",
+      "status": "approved",
+      "createdAt": "2026-11-09"
+    }
+  ],
+  "projects": [
+    {
+      "id": "p1",
+      "userId": "-4eTSfRyg0g",
+      "name": "Mirpur Residential Tower",
+      "location": "Mirpur-10, Dhaka",
+      "status": "Ongoing",
+      "createdAt": "2026-10-12"
+    },
+    {
+      "id": "p2",
+      "userId": "-4eTSfRyg0g",
+      "name": "Dhanmondi Commercial Complex",
+      "location": "Dhanmondi, Dhaka",
+      "status": "Completed",
+      "createdAt": "2026-10-14"
+    },
+    {
+      "id": "p3",
+      "userId": "u1",
+      "name": "Project A",
+      "location": "Bashundhara",
+      "status": "Ongoing",
+      "createdAt": "2026-10-01"
+    },
+    {
+      "id": "p4",
+      "userId": "u2",
+      "name": "Project X",
+      "location": "Uttara",
+      "status": "Ongoing",
+      "createdAt": "2026-10-05"
+    }
+  ],
+  "categories": [
+    {
+      "id": "c1",
+      "name": "Tiles"
+    },
+    {
+      "id": "c2",
+      "name": "Bricks"
+    },
+    {
+      "id": "c3",
+      "name": "Cement"
+    },
+    {
+      "id": "c4",
+      "name": "Steel"
+    },
+    {
+      "id": "c5",
+      "name": "Pipes"
+    },
+    {
+      "id": "c6",
+      "name": "Paint"
+    },
+    {
+      "id": "c7",
+      "name": "Doors and windows"
+    },
+    {
+      "id": "c8",
+      "name": "Electrical materials"
+    },
+    {
+      "id": "c9",
+      "name": "Sanitary items"
+    }
+  ],
+  "listings": [
+    {
+      "id": "l1",
+      "sellerId": "-4eTSfRyg0g",
+      "title": "100 sqft ceramic floor tile",
+      "category": "Tiles",
+      "quantity": 100,
+      "unit": "sqft",
+      "condition": "Unused",
+      "pricePerUnit": 55,
+      "currency": "BDT",
+      "brand": "RAK",
+      "location": "Bashundhara",
+      "availableFrom": "2026-11-01",
+      "description": "High quality floor tiles left over from residential project.",
+      "image": "https://via.placeholder.com/400x300?text=Ceramic+Tile",
+      "status": "available",
+      "isSuspicious": false,
+      "createdAt": "2026-10-01"
+    }
+  ],
+  "buyerRequests": [
+    {
+      "id": "r1",
+      "buyerId": "u2",
+      "projectName": "Project B",
+      "title": "White glossy floor tile",
+      "category": "Tiles",
+      "requiredQuantity": 100,
+      "unit": "sqft",
+      "maxPricePerUnit": 60,
+      "location": "Bashundhara",
+      "status": "active"
+    }
+  ],
+  "matches": [
+    {
+      "id": "m1",
+      "requestId": "r1",
+      "listingId": "l1",
+      "matchScore": 92,
+      "matchDetails": {
+        "materialTypeMatch": true,
+        "locationMatch": true,
+        "priceMatch": true
+      }
+    }
+  ],
+  "orders": [
+    {
+      "id": "o1",
+      "listingId": "l1",
+      "buyerId": "u2",
+      "sellerId": "u1",
+      "quantity": 100,
+      "totalAmount": 5500,
+      "advancePaid": 1000,
+      "paymentStatus": "Paid",
+      "orderStatus": "Confirmed",
+      "createdAt": "2026-10-10"
+    }
+  ],
+  "receipts": [
+    {
+      "id": "rec1",
+      "orderId": "o1",
+      "buyerDetails": {
+        "name": "Karim Builders",
+        "contact": "contact@karimbuilders.com"
+      },
+      "sellerDetails": {
+        "name": "Rahim Construction Ltd.",
+        "contact": "info@rahimconst.com"
+      },
+      "item": "100 sqft ceramic floor tile",
+      "amountPaid": 1000,
+      "dueAmount": 4500,
+      "issuedAt": "2026-10-10"
+    }
+  ],
+  "$schema": "./node_modules/json-server/schema.json"
+}
