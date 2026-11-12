@@ -50,7 +50,7 @@ const Navbar = () => {
                   >
                     {link.name}
                     {activeTab === link.name && (
-                      <span className="absolute bottom-0 left-0 w-full h-[2px] bg-[#c24e00] rounded-full"></span>
+                      <span className="absolute bottom-0 left-0 w-full h-[2px] bg-[#008ba9] rounded-full"></span>
                     )}
                   </a>
                 ))}
@@ -143,7 +143,7 @@ const Navbar = () => {
                   className={({ isActive }) =>
                     `pb-1.5 transition-all duration-200 ${
                       isActive
-                        ? 'text-white border-b-2 border-[#c24e00] font-semibold'
+                        ? 'text-white border-b-2 border-[#008ba9] font-semibold'
                         : 'text-gray-300 hover:text-white'
                     }`
                   }
@@ -184,7 +184,7 @@ const Navbar = () => {
                   className={({ isActive }) =>
                     `block px-3 py-2 rounded text-sm font-medium transition-colors ${
                       isActive
-                        ? 'bg-[#2a3038] text-white border-l-4 border-[#c24e00] font-semibold'
+                        ? 'bg-[#2a3038] text-white border-l-4 border-[#008ba9] font-semibold'
                         : 'text-gray-300 hover:bg-[#252b33] hover:text-white'
                     }`
                   }

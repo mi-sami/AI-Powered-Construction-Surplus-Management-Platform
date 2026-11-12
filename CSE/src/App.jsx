@@ -10,6 +10,7 @@ import EditAdvertisement from "./pages/EditAdvertisement";
 import SearchPage from "./pages/SearchPage";
 import ProductDetailsPage from "./pages/ProductDetailsPage.jsxProductDetailsPage";
 import DashboardPage from "./pages/DashboardPage";
+import RequirementsPage from "./pages/RequirementsPage";
 
 const App = () => {
   return (
@@ -38,6 +39,7 @@ const App = () => {
 
           {/* Dashboard */}
           <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/requirements" element={<RequirementsPage />} />
         </Route>
       </Routes>
     </div>

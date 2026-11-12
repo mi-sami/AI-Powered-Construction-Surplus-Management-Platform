@@ -109,7 +109,7 @@ const AccountDetails = ({
           <button
             type="submit"
             disabled={loading}
-            className="px-6 py-2.5 bg-[#c24e00] hover:bg-[#a84300] text-white text-sm font-semibold rounded transition-colors cursor-pointer disabled:opacity-50"
+            className="px-6 py-2.5 bg-[#008ba9] hover:bg-[#007690] text-white text-sm font-semibold rounded transition-colors cursor-pointer disabled:opacity-50"
           >
             {loading ? 'Saving...' : 'Save changes'}
           </button>
