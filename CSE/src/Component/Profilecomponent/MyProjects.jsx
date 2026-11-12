@@ -161,7 +161,7 @@ const MyProjects = ({
                       <button
                         type="button"
                         onClick={() =>
-                          navigate(`/edit-advertisement/${item.id}`)
+                          navigate(`/profile/edit-advertisement/${item.id}`)
                         }
                         className="px-3 py-1 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 text-xs font-semibold rounded shadow-sm transition-colors cursor-pointer"
                       >

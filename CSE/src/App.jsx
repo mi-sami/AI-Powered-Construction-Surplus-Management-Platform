@@ -1,12 +1,15 @@
-import React from 'react';
-import { Route, Routes } from 'react-router-dom';
-import Home from './pages/Home';
-import Login from './pages/Login';
-import Register from './pages/Register';
-import Profile from './pages/Profile';
-import AuthenticatedFolder from './Component/AuthenticatedFolder/AuthenticatedFolder';
-import AddNewAdvertisement from './pages/AddNewAdvertisement';
-import EditAdvertisement from './pages/EditAdvertisement';
+import React from "react";
+import { Route, Routes } from "react-router-dom";
+import Home from "./pages/Home";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import Profile from "./pages/Profile";
+import AuthenticatedFolder from "./Component/AuthenticatedFolder/AuthenticatedFolder";
+import AddNewAdvertisement from "./pages/AddNewAdvertisement";
+import EditAdvertisement from "./pages/EditAdvertisement";
+import SearchPage from "./pages/SearchPage";
+import ProductDetailsPage from "./pages/ProductDetailsPage.jsxProductDetailsPage";
+import DashboardPage from "./pages/DashboardPage";
 
 const App = () => {
   return (
@@ -19,9 +22,22 @@ const App = () => {
 
         {/* Protected Route */}
         <Route element={<AuthenticatedFolder />}>
+          {/* Profile routes */}
           <Route path="/profile" element={<Profile />} />
           <Route path="/add-advertisement" element={<AddNewAdvertisement />} />
-          <Route path="/edit-advertisement/:id" element={<EditAdvertisement />} />
+          <Route
+            path="/profile/edit-advertisement/:id"
+            element={<EditAdvertisement />}
+          />
+
+          {/* Search Routes */}
+          <Route path="/search" element={<SearchPage />} />
+
+          {/* Product info */}
+          <Route path="/product/:id" element={<ProductDetailsPage />} />
+
+          {/* Dashboard */}
+          <Route path="/dashboard" element={<DashboardPage />} />
         </Route>
       </Routes>
     </div>

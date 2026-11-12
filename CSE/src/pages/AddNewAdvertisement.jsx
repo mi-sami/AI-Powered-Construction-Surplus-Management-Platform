@@ -32,20 +32,21 @@ const AddNewAdvertisement = () => {
     const newAdvertisement = {
       ...data,
       sellerId: user?.id || "u1",
+      sellerName: user?.name || "Verified Seller", // 👈 প্রোডাক্ট ডিটেইলস পেজে সেলারের নাম দেখানোর জন্য
       image: imageUrl || "https://via.placeholder.com/400x300?text=Material+Photo",
       currency: "BDT",
-      status: "available",
+      status: "pending", // 👈 সরাসরি 'available' না হয়ে অ্যাডমিন অ্যাপ্রুভালের জন্য 'pending' থাকবে
       isSuspicious: false,
       createdAt: new Date().toISOString().split("T")[0],
     };
 
     try {
       await dispatch(addListingThunk(newAdvertisement)).unwrap();
-      alert("Advertisement published successfully!");
+      alert("Advertisement submitted! It is now under admin review and will go live once approved.");
       navigate("/profile"); // Navigate back to profile/my-advertisements
     } catch (error) {
-      console.error("Failed to publish advertisement:", error);
-      alert("Failed to publish advertisement.");
+      console.error("Failed to submit advertisement:", error);
+      alert("Failed to submit advertisement.");
     } finally {
       setLoading(false);
     }
@@ -61,7 +62,9 @@ const AddNewAdvertisement = () => {
         {/* Page Title */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900">Add new advertisement</h1>
-          <p className="text-gray-500 text-sm mt-1">Upload a photo of the product.</p>
+          <p className="text-gray-500 text-sm mt-1">
+            Upload a photo of the product. New advertisements require admin approval before going live.
+          </p>
         </div>
 
         {/* Main Form Area */}
