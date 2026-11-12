@@ -49,6 +49,7 @@ const EditAdvertisement = () => {
     const updatedData = {
       ...currentAd,
       ...formData,
+      id: currentAd.id, // নিশ্চিত করা হচ্ছে id যেন মিস না হয়
       image: imageUrl,
     };
 
@@ -57,7 +58,8 @@ const EditAdvertisement = () => {
       alert("Advertisement updated successfully!");
       navigate("/profile");
     } catch (err) {
-      alert("Failed to update advertisement.");
+      console.error("Update Error Details:", err); // Console-এ আসল কারণ দেখাবে
+      alert(`Failed to update: ${err?.message || "Check console for details"}`);
     } finally {
       setLoading(false);
     }
