@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import useAuthInfo from '../../Hook/useAuthInfo';
+import logo from '../../assets/surplusx_logo_transparent_white_text.png';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false); // Public mobile menu state
@@ -26,13 +27,20 @@ const Navbar = () => {
     <>
       {!user?.email ? (
         /* Unauthenticated Navbar (Public) */
-        <nav className="bg-[#1e232a] text-white px-6 py-4 border-b border-gray-800 sticky top-0 z-50">
+        <nav className="bg-[#1e232a] text-white px-6 py-3 border-b border-gray-800 sticky top-0 z-50">
           <div className="max-w-7xl mx-auto flex items-center justify-between">
             
-            {/* Left Side */}
+            {/* Left Side: Only Enlarged Logo */}
             <div className="flex items-center space-x-10">
-              <a href="#home" className="text-xl font-bold tracking-tight text-white cursor-pointer">
-                Surplus Exchange
+              <a
+                href="#home"
+                className="flex items-center cursor-pointer"
+              >
+                <img
+                  src={logo}
+                  alt="Surplus Exchange Logo"
+                  className="h-11 md:h-12 w-auto object-contain"
+                />
               </a>
 
               {/* Desktop Nav Links */}
@@ -124,13 +132,17 @@ const Navbar = () => {
         </nav>
       ) : (
         /* Authenticated Navbar (User Logged In) */
-        <nav className="bg-[#1e232a] text-white px-6 md:px-12 py-4 border-b border-gray-800 shadow-sm sticky top-0 z-50">
+        <nav className="bg-[#1e232a] text-white px-6 md:px-12 py-3 border-b border-gray-800 shadow-sm sticky top-0 z-50">
           <div className="max-w-7xl mx-auto flex items-center justify-between">
             
-            {/* Brand Logo / Title */}
-            <div className="text-xl font-bold tracking-tight">
-              <Link to="/" className="text-white hover:text-gray-200 transition-colors">
-                Surplus Exchange
+            {/* Brand Logo Only (Enlarged) */}
+            <div>
+              <Link to="/" className="flex items-center">
+                <img
+                  src={logo}
+                  alt="Surplus Exchange Logo"
+                  className="h-11 md:h-12 w-auto object-contain"
+                />
               </Link>
             </div>
 
