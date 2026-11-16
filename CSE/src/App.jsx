@@ -12,6 +12,7 @@ import ProductDetailsPage from "./pages/ProductDetailsPage.jsxProductDetailsPage
 import DashboardPage from "./pages/DashboardPage";
 import RequirementsPage from "./pages/RequirementsPage";
 import AdvancePaymentPage from "./pages/AdvancePaymentPage";
+import PaymentReceiptPage from "./pages/PaymentReceiptPage";
 
 const App = () => {
   return (
@@ -44,6 +45,9 @@ const App = () => {
           {/* Dashboard */}
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/requirements" element={<RequirementsPage />} />
+
+          {/*  <Route element={<AuthenticatedFolder />}> এর ভেতরে: */}
+          <Route path="/receipt/:orderId" element={<PaymentReceiptPage />} />
         </Route>
       </Routes>
     </div>
