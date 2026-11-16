@@ -11,6 +11,7 @@ import SearchPage from "./pages/SearchPage";
 import ProductDetailsPage from "./pages/ProductDetailsPage.jsxProductDetailsPage";
 import DashboardPage from "./pages/DashboardPage";
 import RequirementsPage from "./pages/RequirementsPage";
+import AdvancePaymentPage from "./pages/AdvancePaymentPage";
 
 const App = () => {
   return (
@@ -36,6 +37,9 @@ const App = () => {
 
           {/* Product info */}
           <Route path="/product/:id" element={<ProductDetailsPage />} />
+
+          {/* Advance Payment */}
+          <Route path="/advance-payment/:id" element={<AdvancePaymentPage />} />
 
           {/* Dashboard */}
           <Route path="/dashboard" element={<DashboardPage />} />

@@ -1,6 +1,12 @@
 import React from "react";
 
-const ProductDetailsForm = ({ register, errors, loading, onSaveDraft, isEditMode = false }) => {
+const ProductDetailsForm = ({
+  register,
+  errors,
+  loading,
+  onSaveDraft,
+  isEditMode = false,
+}) => {
   return (
     <div className="bg-white rounded-lg border border-gray-200/80 p-6 sm:p-8 shadow-sm">
       <h3 className="text-base font-bold text-gray-900 mb-5">
@@ -36,7 +42,9 @@ const ProductDetailsForm = ({ register, errors, loading, onSaveDraft, isEditMode
             className="w-full px-3.5 py-2 bg-white border border-gray-300 rounded text-sm text-gray-900 focus:outline-none focus:ring-1 focus:ring-[#008ba9]"
           />
           {errors?.title && (
-            <span className="text-red-500 text-xs mt-1 block">{errors.title.message}</span>
+            <span className="text-red-500 text-xs mt-1 block">
+              {errors.title.message}
+            </span>
           )}
         </div>
 
@@ -62,7 +70,9 @@ const ProductDetailsForm = ({ register, errors, loading, onSaveDraft, isEditMode
         {/* Quantity & Unit */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className="block text-xs font-semibold text-gray-700 mb-1.5">Quantity *</label>
+            <label className="block text-xs font-semibold text-gray-700 mb-1.5">
+              Quantity *
+            </label>
             <input
               type="number"
               placeholder="500"
@@ -71,7 +81,9 @@ const ProductDetailsForm = ({ register, errors, loading, onSaveDraft, isEditMode
             />
           </div>
           <div>
-            <label className="block text-xs font-semibold text-gray-700 mb-1.5">Unit</label>
+            <label className="block text-xs font-semibold text-gray-700 mb-1.5">
+              Unit
+            </label>
             <select
               {...register("unit")}
               className="w-full px-3.5 py-2 bg-white border border-gray-300 rounded text-sm text-gray-900 focus:outline-none focus:ring-1 focus:ring-[#008ba9]"
@@ -87,7 +99,9 @@ const ProductDetailsForm = ({ register, errors, loading, onSaveDraft, isEditMode
         {/* Condition & Price */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className="block text-xs font-semibold text-gray-700 mb-1.5">Condition</label>
+            <label className="block text-xs font-semibold text-gray-700 mb-1.5">
+              Condition
+            </label>
             <select
               {...register("condition")}
               className="w-full px-3.5 py-2 bg-white border border-gray-300 rounded text-sm text-gray-900 focus:outline-none focus:ring-1 focus:ring-[#008ba9]"
@@ -104,7 +118,10 @@ const ProductDetailsForm = ({ register, errors, loading, onSaveDraft, isEditMode
             <input
               type="number"
               placeholder="55"
-              {...register("pricePerUnit", { required: true, valueAsNumber: true })}
+              {...register("pricePerUnit", {
+                required: true,
+                valueAsNumber: true,
+              })}
               className="w-full px-3.5 py-2 bg-white border border-gray-300 rounded text-sm text-gray-900 focus:outline-none focus:ring-1 focus:ring-[#008ba9]"
             />
           </div>
@@ -113,7 +130,9 @@ const ProductDetailsForm = ({ register, errors, loading, onSaveDraft, isEditMode
         {/* Brand & Location */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className="block text-xs font-semibold text-gray-700 mb-1.5">Brand</label>
+            <label className="block text-xs font-semibold text-gray-700 mb-1.5">
+              Brand
+            </label>
             <input
               type="text"
               placeholder="Optional"
@@ -122,7 +141,9 @@ const ProductDetailsForm = ({ register, errors, loading, onSaveDraft, isEditMode
             />
           </div>
           <div>
-            <label className="block text-xs font-semibold text-gray-700 mb-1.5">Location *</label>
+            <label className="block text-xs font-semibold text-gray-700 mb-1.5">
+              Location *
+            </label>
             <input
               type="text"
               placeholder="Bashundhara"
@@ -132,9 +153,40 @@ const ProductDetailsForm = ({ register, errors, loading, onSaveDraft, isEditMode
           </div>
         </div>
 
+        {/* Amount of Advance (Seller Sets Advance Amount) */}
+        <div>
+          <label className="block text-xs font-semibold text-gray-700 mb-1.5">
+            Amount of advance (৳) <span className="text-red-500">*</span>
+          </label>
+          <input
+            type="number"
+            min="0"
+            step="any"
+            placeholder="e.g. 2000"
+            {...register("advanceAmount", {
+              required: "Advance amount is required",
+              min: {
+                value: 0,
+                message: "Advance amount cannot be negative",
+              },
+            })}
+            className="w-full px-3 py-2.5 bg-white border border-gray-300 rounded text-sm text-gray-900 focus:outline-none focus:ring-1 focus:ring-[#008ba9]"
+          />
+          <p className="text-[11px] text-gray-500 mt-1">
+            Buyers will pay this advance amount online to confirm their order.
+          </p>
+          {errors.advanceAmount && (
+            <span className="text-red-500 text-xs mt-1 block">
+              {errors.advanceAmount.message}
+            </span>
+          )}
+        </div>
+
         {/* Available from */}
         <div>
-          <label className="block text-xs font-semibold text-gray-700 mb-1.5">Available from *</label>
+          <label className="block text-xs font-semibold text-gray-700 mb-1.5">
+            Available from *
+          </label>
           <input
             type="date"
             {...register("availableFrom")}
@@ -144,7 +196,9 @@ const ProductDetailsForm = ({ register, errors, loading, onSaveDraft, isEditMode
 
         {/* Description */}
         <div>
-          <label className="block text-xs font-semibold text-gray-700 mb-1.5">Description</label>
+          <label className="block text-xs font-semibold text-gray-700 mb-1.5">
+            Description
+          </label>
           <textarea
             rows="3"
             {...register("description")}
@@ -163,9 +217,13 @@ const ProductDetailsForm = ({ register, errors, loading, onSaveDraft, isEditMode
                 : "bg-[#008ba9] hover:bg-[#007690]"
             }`}
           >
-            {loading ? "Processing..." : isEditMode ? "Save changes" : "Publish advertisement"}
+            {loading
+              ? "Processing..."
+              : isEditMode
+                ? "Save changes"
+                : "Publish advertisement"}
           </button>
-          
+
           {onSaveDraft && (
             <button
               type="button"

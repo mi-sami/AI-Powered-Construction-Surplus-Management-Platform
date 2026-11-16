@@ -19,7 +19,6 @@ const Navbar = () => {
     { name: 'Dashboard', path: '/dashboard' },
     { name: 'Search', path: '/search' },
     { name: 'Requirements', path: '/requirements' },
-    { name: 'Orders', path: '/orders' },
     { name: 'Profile', path: '/profile' },
   ];
 

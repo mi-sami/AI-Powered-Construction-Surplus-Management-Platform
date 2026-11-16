@@ -32,10 +32,11 @@ const AddNewAdvertisement = () => {
     const newAdvertisement = {
       ...data,
       sellerId: user?.id || "u1",
-      sellerName: user?.name || "Verified Seller", // 👈 প্রোডাক্ট ডিটেইলস পেজে সেলারের নাম দেখানোর জন্য
+      sellerName: user?.name || "Verified Seller", // প্রোডাক্ট ডিটেইলস পেজে সেলারের নাম দেখানোর জন্য
+      sellerPhone: user?.whatsappPhone || user?.phone || "", // অ্যাকাউন্ট থেকে দেওয়া WhatsApp নম্বর
       image: imageUrl || "https://via.placeholder.com/400x300?text=Material+Photo",
       currency: "BDT",
-      status: "pending", // 👈 সরাসরি 'available' না হয়ে অ্যাডমিন অ্যাপ্রুভালের জন্য 'pending' থাকবে
+      status: "pending", // সরাসরি 'available' না হয়ে অ্যাডমিন অ্যাপ্রুভালের জন্য 'pending' থাকবে
       isSuspicious: false,
       createdAt: new Date().toISOString().split("T")[0],
     };
