@@ -225,12 +225,12 @@ const Register = () => {
 
               <div>
                 <label className="block text-xs font-semibold text-gray-700 mb-1">
-                  Phone <span className="text-red-500">*</span>
+                  Whatsapp number <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
                   {...register("phone", {
-                    required: "Phone number is required",
+                    required: "Whatsapp number is required",
                   })}
                   className="w-full px-3 py-2 bg-white border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-[#c24e00] text-sm text-gray-900"
                 />
