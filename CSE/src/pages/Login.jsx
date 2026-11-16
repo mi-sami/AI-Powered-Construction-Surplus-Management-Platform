@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 import axios from 'axios';
 import useAuthInfo from '../Hook/useAuthInfo';
 import { useNavigate, useLocation } from 'react-router-dom';
+import logo from '../../src/assets/surplusx_logo_transparent_white_text.png';
 
 const Login = () => {
   const { user, setUser } = useAuthInfo();
@@ -74,7 +75,11 @@ const Login = () => {
       <div className="w-full md:w-1/2 bg-[#1e232a] text-white p-8 md:p-16 flex flex-col justify-between min-h-[400px] md:min-h-screen">
         <div>
           <span onClick={() => navigate('/')} className="text-xl font-bold tracking-tight text-white cursor-pointer">
-            Surplus Exchange
+            <img
+                              src={logo}
+                              alt="Surplus Exchange Logo"
+                              className="h-11 md:h-12 w-auto object-contain"
+                            />
           </span>
         </div>
 

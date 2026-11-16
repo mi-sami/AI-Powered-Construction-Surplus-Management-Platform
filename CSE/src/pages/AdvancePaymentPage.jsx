@@ -3,7 +3,6 @@ import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import useAuthInfo from "../Hook/useAuthInfo";
 import PaymentSummaryCard from "../Component/AdvancePayment/PaymentSummaryCard";
-import AdvanceReductionRequest from "../Component/AdvancePayment/AdvanceReductionRequest";
 import PaymentMethodSelector from "../Component/AdvancePayment/PaymentMethodSelector";
 
 const AdvancePaymentPage = () => {
@@ -15,23 +14,12 @@ const AdvancePaymentPage = () => {
   const [loading, setLoading] = useState(true);
   const [selectedMethod, setSelectedMethod] = useState("bKash");
   const [paying, setPaying] = useState(false);
-  const [advanceRequest, setAdvanceRequest] = useState(null);
 
   useEffect(() => {
     const fetchPaymentContext = async () => {
       try {
         const prodRes = await axios.get(`http://localhost:5000/listings/${id}`);
         setProduct(prodRes.data);
-
-        if (user?.id) {
-          const reqRes = await axios.get(
-            `http://localhost:5000/advanceRequests?listingId=${id}&buyerId=${user.id}`
-          );
-          if (reqRes.data.length > 0) {
-            const latestReq = reqRes.data[reqRes.data.length - 1];
-            setAdvanceRequest(latestReq);
-          }
-        }
       } catch (error) {
         console.error("Error loading advance payment page:", error);
       } finally {
@@ -40,7 +28,7 @@ const AdvancePaymentPage = () => {
     };
 
     fetchPaymentContext();
-  }, [id, user?.id]);
+  }, [id]);
 
   if (loading) {
     return (
@@ -70,23 +58,35 @@ const AdvancePaymentPage = () => {
     Number(product.totalPrice) ||
     Number(product.quantity || 1) * Number(product.pricePerUnit || 0);
 
-  const isReducedBySeller =
-    advanceRequest?.status === "approved" &&
-    advanceRequest?.approvedAdvance !== undefined;
-
-  const currentAdvance = isReducedBySeller
-    ? Number(advanceRequest.approvedAdvance)
-    : Number(product.advanceAmount || 0);
-
+  const currentAdvance = Number(product.advanceAmount || 0);
   const dueBalance = Math.max(0, totalAmount - currentAdvance);
 
   const handleConfirmOrder = async () => {
     setPaying(true);
     try {
+      const now = new Date();
+      const orderId = `ORD-${Date.now()}`;
+      const receiptNo = `REC-${Math.floor(100000 + Math.random() * 900000)}`;
+      const transactionId = `TXN-${Date.now().toString().slice(-8)}`;
+      const formattedDateTime = now.toLocaleString("en-GB", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true,
+      });
+
       const newOrder = {
-        id: `ord_${Date.now()}`,
+        id: orderId,
+        receiptNo,
+        transactionId,
+        dateTime: formattedDateTime,
         listingId: product.id,
         listingTitle: product.title,
+        quantity: Number(product.quantity || 1),
+        unit: product.unit || "unit",
+        unitPrice: Number(product.pricePerUnit || 0),
         buyerId: user?.id || "buyer_1",
         buyerName: user?.name || "Buyer",
         sellerId: product.sellerId,
@@ -96,12 +96,28 @@ const AdvancePaymentPage = () => {
         dueBalance,
         paymentMethod: selectedMethod,
         status: "confirmed",
-        createdAt: new Date().toISOString().split("T")[0],
+        createdAt: now.toISOString().split("T")[0],
       };
 
+      // ১. অর্ডার সেভ করা
       await axios.post("http://localhost:5000/orders", newOrder);
-      alert("Advance payment succeeded! Your order is confirmed.");
-      navigate("/orders");
+
+      // ২. সেলারের কাছে Order Confirm ও Receipt-এর নোটিফিকেশন পাঠানো
+      await axios.post("http://localhost:5000/notifications", {
+        id: `notif_${Date.now()}`,
+        userId: product.sellerId,
+        type: "ORDER_CONFIRMED",
+        orderId: orderId,
+        receiptNo: receiptNo,
+        listingId: product.id,
+        title: "New Order Confirmed & Receipt Ready",
+        message: `${user?.name || "A buyer"} confirmed an order for "${product.title}" and paid ৳${currentAdvance.toLocaleString()} advance. Click to view payment receipt.`,
+        isRead: false,
+        createdAt: now.toISOString(),
+      });
+
+      // ৩. বায়ারকে সরাসরি Payment Receipt পেজে নিয়ে যাওয়া
+      navigate(`/receipt/${orderId}`);
     } catch (error) {
       console.error("Order confirmation error:", error);
       alert("Failed to confirm order.");
@@ -125,17 +141,15 @@ const AdvancePaymentPage = () => {
           Advance payment
         </h1>
 
-        {/* Component 1: Pricing Summary */}
+        {/* Pricing Summary */}
         <PaymentSummaryCard
           totalAmount={totalAmount}
           currentAdvance={currentAdvance}
           dueBalance={dueBalance}
-          isReducedBySeller={isReducedBySeller}
+          isReducedBySeller={false}
         />
 
-        
-
-        {/* Component 3: Payment Method & Confirmation */}
+        {/* Payment Method & Confirmation */}
         <PaymentMethodSelector
           selectedMethod={selectedMethod}
           onSelectMethod={setSelectedMethod}

@@ -176,30 +176,64 @@
   ],
   "orders": [
     {
-      "id": "o1",
-      "listingId": "l1",
-      "buyerId": "u2",
-      "sellerId": "u1",
+      "id": "ORD-1794850533140",
+      "receiptNo": "REC-986899",
+      "transactionId": "TXN-50533140",
+      "dateTime": "16 Nov 2026, 11:35 pm",
+      "listingId": "Ze5ICop",
+      "listingTitle": "Rubi Cement",
       "quantity": 100,
-      "totalAmount": 5500,
-      "advancePaid": 1000,
-      "paymentStatus": "Paid",
-      "orderStatus": "Confirmed",
-      "createdAt": "2026-10-10"
-    },
-    {
-      "id": "ord_1794847795141",
-      "listingId": "aPqPq43oMUk",
-      "listingTitle": "Grey Tiles",
+      "unit": "bags",
+      "unitPrice": 1200,
       "buyerId": "-4eTSfRyg0g",
       "buyerName": "Minhazul Islam Bhuiyan",
-      "sellerId": "1UJdN57cvLk",
-      "totalAmount": 50000,
-      "advancePaid": 0,
-      "dueBalance": 50000,
-      "paymentMethod": "bKash",
-      "status": "confirmed",
+      "sellerId": "-4eTSfRyg0g",
+      "sellerName": "Minhazul Islam Bhuiyan",
+      "totalAmount": 120000,
+      "advancePaid": 12000,
+      "dueBalance": 108000,
+      "paymentMethod": "Nagad",
+      "orderStatus": "confirmed",
       "createdAt": "2026-11-16"
+    }
+    
+  ],
+  "notifications": [
+    {
+      "id": "notif_1794850533151",
+      "userId": "-4eTSfRyg0g",
+      "type": "ORDER_CONFIRMED",
+      "orderId": "ORD-1794850533140",
+      "receiptNo": "REC-986899",
+      "listingId": "Ze5ICop",
+      "title": "New Order Confirmed & Receipt Ready",
+      "message": "Minhazul Islam Bhuiyan confirmed an order for \"Rubi Cement\" and paid ৳12,000 advance. Click to view payment receipt.",
+      "isRead": false,
+      "createdAt": "2026-11-16T17:35:33.140Z"
+    },
+    {
+      "id": "notif_1794850736493",
+      "userId": "-4eTSfRyg0g",
+      "type": "ORDER_CONFIRMED",
+      "orderId": "ORD-1794850736465",
+      "receiptNo": "REC-302079",
+      "listingId": "Ze5ICop",
+      "title": "New Order Confirmed & Receipt Ready",
+      "message": "Minhazul Islam Bhuiyan confirmed an order for \"Rubi Cement\" and paid ৳12,000 advance. Click to view payment receipt.",
+      "isRead": false,
+      "createdAt": "2026-11-16T17:38:56.465Z"
+    },
+    {
+      "id": "notif_1794850808799",
+      "userId": "-4eTSfRyg0g",
+      "type": "ORDER_CONFIRMED",
+      "orderId": "ORD-1794850808774",
+      "receiptNo": "REC-268938",
+      "listingId": "Ze5ICop",
+      "title": "New Order Confirmed & Receipt Ready",
+      "message": "Minhazul Islam Bhuiyan confirmed an order for \"Rubi Cement\" and paid ৳12,000 advance. Click to view payment receipt.",
+      "isRead": false,
+      "createdAt": "2026-11-16T17:40:08.774Z"
     }
   ],
   "receipts": [
