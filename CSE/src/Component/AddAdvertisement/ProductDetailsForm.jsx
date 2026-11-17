@@ -214,7 +214,7 @@ const ProductDetailsForm = ({
             className={`px-5 py-2.5 text-white text-xs font-semibold rounded transition-colors cursor-pointer ${
               isEditMode
                 ? "bg-[#1b5e3a] hover:bg-[#14472c]"
-                : "bg-[#008ba9] hover:bg-[#007690]"
+                : "bg-[#c24e00] hover:hover:bg-[#a84300]"
             }`}
           >
             {loading

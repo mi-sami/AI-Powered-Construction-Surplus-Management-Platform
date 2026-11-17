@@ -56,7 +56,7 @@ const MatchCard = ({ item }) => {
       <button
         type="button"
         onClick={() => navigate(`/product/${item.id}`)}
-        className="px-6 py-2 bg-[#008ba9] hover:bg-[#007690] text-white text-xs font-semibold rounded transition-colors cursor-pointer"
+        className="px-6 py-2 bg-[#c24e00] hover:bg-[#a84300] text-white text-xs font-semibold rounded transition-colors cursor-pointer"
       >
         View and order
       </button>
