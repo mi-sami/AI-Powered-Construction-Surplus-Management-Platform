@@ -1,6 +1,18 @@
 {
   "users": [
     {
+      "id": "u0",
+      "name": "System Admin",
+      "email": "admin@gmail.com",
+      "phone": "01700000000",
+      "password": "123456",
+      "role": "admin",
+      "accountType": "Admin",
+      "address": "Dhaka",
+      "status": "approved",
+      "createdAt": "2026-07-01"
+    },
+    {
       "id": "-4eTSfRyg0g",
       "name": "Minhazul Islam Bhuiyan",
       "type": "Individual",
