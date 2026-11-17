@@ -139,7 +139,7 @@ const FilterSidebar = ({ filters, setFilters, onApplyFilters, onResetFilters }) 
         <button
           type="button"
           onClick={onApplyFilters}
-          className="w-full py-2.5 bg-[#008ba9] hover:bg-[#007690] text-white font-semibold rounded transition-colors cursor-pointer mt-2"
+          className="w-full py-2.5 bg-[#c24e00] hover:bg-[#007690] text-white font-semibold rounded transition-colors cursor-pointer mt-2"
         >
           Apply Filters
         </button>

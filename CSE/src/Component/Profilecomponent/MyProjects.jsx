@@ -69,7 +69,7 @@ const MyProjects = ({
         <button
           type="button"
           onClick={handleAddClick}
-          className="px-4 py-2 bg-[#008ba9] hover:bg-[#007690] text-white text-sm font-semibold rounded transition-colors cursor-pointer"
+          className="px-4 py-2 bg-[#c24e00] hover:bg-[#a84300] text-white text-sm font-semibold rounded transition-colors cursor-pointer"
         >
           + Add advertisement
         </button>
