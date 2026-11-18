@@ -2,7 +2,7 @@ import React from "react";
 
 const DashboardRecentOrders = ({ orders = [], loading = false }) => {
   const getOrderStatusBadge = (status) => {
-    const formatted = status ? status.toLowerCase() : "pending";
+    const formatted = "confirmed"
 
     if (formatted === "confirmed" || formatted === "paid") {
       return (
