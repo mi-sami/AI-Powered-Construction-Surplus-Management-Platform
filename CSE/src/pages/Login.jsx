@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate, useLocation } from "react-router-dom";
+import { UserRound } from "lucide-react";
 import useAuthInfo from "../Hook/useAuthInfo";
 import { handleApiAction } from "../Utils/ApiHandler";
 import loginSideImg from "../assets/pexels-mart-production-7709283.jpg";
@@ -110,8 +111,18 @@ const Login = () => {
 
           {/* Primary White Card */}
           <div className="relative bg-white rounded-sm shadow-2xl p-5 sm:p-8 md:p-12 grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-10 items-stretch">
-            {/* Left Side Image Card */}
-            <div className="md:col-span-5 relative rounded-sm overflow-hidden h-44 sm:h-56 md:h-auto md:min-h-[480px] shadow-md group">
+            {/* Mobile & Tablet Header (White Background, No Logo, Large Purple-Blue Gradient Icon) */}
+            <div className="md:hidden flex flex-col items-center justify-center bg-white py-3 px-4">
+              <div className="w-24 h-24 rounded-full bg-gradient-to-br from-[#4f5bd5] via-[#5b50d6] to-[#7c3aed] flex items-center justify-center shadow-lg shadow-[#4f5bd5]/30">
+                <UserRound className="w-12 h-12 text-white" strokeWidth={2} />
+              </div>
+              <p className="text-xs font-medium text-gray-500 mt-3 tracking-wide">
+                Sign in to your Surplus Exchange account
+              </p>
+            </div>
+
+            {/* Desktop Left Side Image Card */}
+            <div className="hidden md:block md:col-span-5 relative rounded-sm overflow-hidden min-h-[480px] shadow-md group">
               <img
                 src={loginSideImg}
                 alt="Surplus Exchange Login"
@@ -120,20 +131,20 @@ const Login = () => {
               {/* Dark Indigo Overlay */}
               <div className="absolute inset-0 bg-gradient-to-t from-[#1a2035]/90 via-[#1a2035]/25 to-transparent"></div>
 
-              {/* Top Logo (Right on Mobile/Tablet, Left on Desktop) */}
+              {/* Top Logo */}
               <div
                 onClick={() => navigate("/")}
-                className="absolute top-3 right-3 md:top-4 md:left-4 md:right-auto backdrop-blur-xs px-2 py-1 rounded-xs cursor-pointer"
+                className="absolute top-4 left-4 backdrop-blur-xs px-2 py-1 rounded-xs cursor-pointer"
               >
                 <img
-                  className="h-9 sm:h-11 md:h-14 w-auto object-contain"
+                  className="h-14 w-auto object-contain"
                   src={Logo}
                   alt="Surplus Exchange Logo"
                 />
               </div>
 
               {/* Bottom Caption on Image */}
-              <div className="hidden md:block absolute bottom-6 inset-x-6 text-white">
+              <div className="absolute bottom-6 inset-x-6 text-white">
                 <p className="text-lg font-bold leading-snug">
                   Sell what is left.
                   <br />
@@ -147,7 +158,7 @@ const Login = () => {
             </div>
 
             {/* Right Side Form Content (Vertically Centered) */}
-            <div className="md:col-span-7 flex flex-col justify-center py-6 md:py-10">
+            <div className="md:col-span-7 flex flex-col justify-center py-4 md:py-10">
               {/* Header: Login_ */}
               <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
                 <div>
@@ -186,6 +197,9 @@ const Login = () => {
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                 {/* Email or Phone Field */}
                 <div>
+                  <label className="block text-[10px] font-bold tracking-widest text-gray-900 uppercase mb-1">
+                    EMAIL / PHONE <span className="text-red-500">*</span>
+                  </label>
                   <div className="relative flex items-center border-b border-gray-300 focus-within:border-[#4f5bd5] pb-2">
                     <input
                       type="text"
@@ -193,16 +207,13 @@ const Login = () => {
                       {...register("identifier", {
                         required: "Email or phone number is required",
                       })}
-                      className="w-full bg-transparent text-sm font-medium text-[#4f5bd5] placeholder-gray-500 focus:outline-none pr-32"
+                      className="w-full bg-transparent text-sm font-medium text-[#4f5bd5] placeholder-gray-500 focus:outline-none pr-6"
                     />
                     {identifierValue?.trim().length > 4 && (
-                      <span className="text-emerald-500 text-xs font-bold mr-2">
+                      <span className="text-emerald-500 text-xs font-bold shrink-0">
                         ✓
                       </span>
                     )}
-                    <span className="text-[10px] font-bold tracking-widest text-gray-900 uppercase shrink-0">
-                      EMAIL / PHONE <span className="text-red-500">*</span>
-                    </span>
                   </div>
                   {errors.identifier && (
                     <span className="text-red-500 text-[11px] mt-1 block">
@@ -213,6 +224,9 @@ const Login = () => {
 
                 {/* Password Field */}
                 <div>
+                  <label className="block text-[10px] font-bold tracking-widest text-gray-900 uppercase mb-1">
+                    PASSWORD <span className="text-red-500">*</span>
+                  </label>
                   <div className="relative flex items-center border-b border-gray-300 focus-within:border-[#4f5bd5] pb-2">
                     <input
                       type="password"
@@ -224,11 +238,8 @@ const Login = () => {
                           message: "Password must be at least 6 characters",
                         },
                       })}
-                      className="w-full bg-transparent text-sm text-gray-800 placeholder-gray-500 focus:outline-none pr-24"
+                      className="w-full bg-transparent text-sm text-gray-800 placeholder-gray-500 focus:outline-none"
                     />
-                    <span className="text-[10px] font-bold tracking-widest text-gray-900 uppercase shrink-0">
-                      PASSWORD <span className="text-red-500">*</span>
-                    </span>
                   </div>
                   {errors.password && (
                     <span className="text-red-500 text-[11px] mt-1 block">

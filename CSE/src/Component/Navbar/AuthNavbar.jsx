@@ -37,7 +37,7 @@ const AuthNavbar = ({ user }) => {
                 className={({ isActive }) =>
                   `pb-1.5 transition-all duration-200 ${
                     isActive
-                      ? 'text-white border-b-2 border-[#008ba9] font-semibold'
+                      ? 'text-white border-b-2 border-[#3f4bc2] font-semibold'
                       : 'text-gray-300 hover:text-white'
                   }`
                 }

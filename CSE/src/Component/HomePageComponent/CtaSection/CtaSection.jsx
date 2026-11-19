@@ -13,13 +13,13 @@ const CtaSection = () => {
         </p>
         <div className="flex justify-center items-center space-x-4 pt-4">
           <Link to='/register'>
-            <button className="px-6 py-2.5 bg-[#c24e00] hover:bg-[#a84300] text-white font-medium rounded transition-colors cursor-pointer">
+            <button className="px-9 py-3 bg-[#4f5bd5] hover:bg-[#3f4bc2] text-white text-xs font-bold tracking-widest uppercase rounded-full shadow-lg shadow-[#4f5bd5]/30 transition-all cursor-pointer disabled:opacity-50">
               Register
             </button>
             </Link>
 
             <Link to='/login'>
-            <button className="px-6 py-2.5 bg-white text-gray-900 hover:bg-gray-100 font-medium rounded transition-colors cursor-pointer">
+            <button className="px-5 py-2 text-sm font-medium text-gray-900 bg-white rounded hover:bg-gray-100 transition-all cursor-pointer rounded-full">
               Login
             </button>
             </Link>
