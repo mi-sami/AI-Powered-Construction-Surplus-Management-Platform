@@ -1,15 +1,15 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import logo from '../../assets/surplusx_logo_transparent_white_text.png';
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
+import logo from "../../assets/surplusx_logo_transparent_white_text.png";
 
 const PublicNavbar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState('Home');
+  const [activeTab, setActiveTab] = useState("Home");
 
   const navLinks = [
-    { name: 'Home', href: '#home' },
-    { name: 'How it works', href: '#how-it-works' },
-    { name: 'Smart tools', href: '#smart-tools' },
+    { name: "Home", href: "#home" },
+    { name: "How it works", href: "#how-it-works" },
+    { name: "Smart tools", href: "#smart-tools" },
   ];
 
   return (
@@ -33,8 +33,8 @@ const PublicNavbar = () => {
                 onClick={() => setActiveTab(link.name)}
                 className={`relative py-1 transition-colors duration-200 ${
                   activeTab === link.name
-                    ? 'text-white font-semibold'
-                    : 'text-gray-400 hover:text-gray-200'
+                    ? "text-white font-semibold"
+                    : "text-gray-400 hover:text-gray-200"
                 }`}
               >
                 {link.name}
@@ -66,11 +66,26 @@ const PublicNavbar = () => {
             onClick={() => setIsOpen(!isOpen)}
             className="text-gray-400 hover:text-white focus:outline-none cursor-pointer"
           >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg
+              className="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
               {isOpen ? (
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M6 18L18 6M6 6l12 12"
+                />
               ) : (
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M4 6h16M4 12h16M4 18h16"
+                />
               )}
             </svg>
           </button>
@@ -89,13 +104,14 @@ const PublicNavbar = () => {
                 setIsOpen(false);
               }}
               className={`block px-2 py-1 text-base ${
-                activeTab === link.name ? 'text-white font-semibold' : 'text-gray-400'
+                activeTab === link.name
+                  ? "text-white font-semibold"
+                  : "text-gray-400"
               }`}
             >
               {link.name}
             </a>
           ))}
-          
         </div>
       )}
     </nav>
