@@ -1,12 +1,18 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
-import axios from "axios";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
+import { UserRound } from "lucide-react";
+import { handleApiAction } from "../Utils/ApiHandler";
+import registerSideImg from "../assets/pexels-mart-production-7709283.jpg";
+import Logo from "../assets/surplusx_logo_transparent.png";
 
 const Register = () => {
   const [accountType, setAccountType] = useState("Company"); // 'Company' or 'Individual'
   const [loading, setLoading] = useState(false);
   const [serverError, setServerError] = useState("");
+  const [docImage, setDocImage] = useState("");
+  const [docError, setDocError] = useState("");
+  const [agreedTerms, setAgreedTerms] = useState(true);
   const navigate = useNavigate();
 
   const {
@@ -17,49 +23,102 @@ const Register = () => {
     formState: { errors },
   } = useForm();
 
-  // Watch password for confirm password matching
   const password = watch("password");
+  const emailValue = watch("email");
 
-  // Handle Form Submission to json-server
+  // ইমেজ ফাইলকে Base64-এ রূপান্তর ও ভ্যালিডেশন
+  const handleImageUpload = (e) => {
+    setDocError("");
+    const file = e.target.files?.[0];
+    if (!file) {
+      setDocImage("");
+      return;
+    }
+
+    if (file.size > 2 * 1024 * 1024) {
+      setDocError("Image size must be less than 2MB.");
+      e.target.value = "";
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setDocImage(reader.result);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  // Account Type পরিবর্তন করলে ফর্ম ও ছবি রিসেট
+  const handleAccountTypeChange = (type) => {
+    setAccountType(type);
+    setDocImage("");
+    setDocError("");
+    reset();
+  };
+
+  // Form Submission
   const onSubmit = async (data) => {
+    if (!docImage) {
+      setDocError(
+        accountType === "Company"
+          ? "Trade license image is required."
+          : "NID card image is required.",
+      );
+      return;
+    }
+
+    if (!agreedTerms) {
+      setServerError("Please accept the terms & conditions to continue.");
+      return;
+    }
+
     setLoading(true);
     setServerError("");
 
-    // Payload mapping based on selected Account Type
     const newUser = {
       id: `u_${Date.now()}`,
       name: accountType === "Company" ? data.companyName : data.fullName,
+      role: "user",
       type: accountType,
+      accountType: accountType,
       email: data.email,
       phone: data.phone,
       address: accountType === "Company" ? data.companyAddress : data.address,
       tradeLicenseNo: accountType === "Company" ? data.tradeLicenseNo : null,
+      tradeLicenseImage: accountType === "Company" ? docImage : null,
       nidNo: accountType === "Individual" ? data.nidNo : null,
+      nidImage: accountType === "Individual" ? docImage : null,
       password: data.password,
-      status: "pending", // Default status as shown in prompt info
+      status: "pending",
       createdAt: new Date().toISOString().split("T")[0],
     };
 
     try {
-      // 1. Check if user with this email already exists
-      const existingUserCheck = await axios.get(
-        `http://localhost:5000/users?email=${data.email}`,
+      const allUsers = await handleApiAction({
+        action: "GET",
+        target: "users",
+      });
+
+      const emailExists = (Array.isArray(allUsers) ? allUsers : []).some(
+        (u) => u.email?.toLowerCase() === data.email.trim().toLowerCase(),
       );
 
-      if (existingUserCheck.data.length > 0) {
+      if (emailExists) {
         setServerError("An account with this email already exists.");
         setLoading(false);
         return;
       }
 
-      // 2. Save data to db.json
-      const response = await axios.post("http://localhost:5000/users", newUser);
+      await handleApiAction({
+        action: "ADD",
+        target: "users",
+        payload: newUser,
+      });
 
-      if (response.status === 201 || response.status === 200) {
-        alert("Account created successfully! Please wait for admin approval.");
-        reset();
-        navigate("/login");
-      }
+      alert("Account created successfully! Please wait for admin approval.");
+      setDocImage("");
+      reset();
+      navigate("/login");
     } catch (error) {
       console.error("Registration Error:", error);
       setServerError(
@@ -70,297 +129,445 @@ const Register = () => {
     }
   };
 
+  const isEmailValid =
+    emailValue && /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(emailValue);
+
   return (
-    <div className="min-h-screen w-full flex flex-col md:flex-row font-sans">
-      {/* Left Banner Section */}
-      <div className="w-full md:w-1/2 bg-[#1e232a] text-white p-8 md:p-16 flex flex-col justify-between min-h-[400px] md:min-h-screen">
-        <div>
+    <div className="min-h-screen w-full relative flex items-center justify-center p-4 sm:p-8 bg-[#161922] overflow-x-hidden font-sans">
+      {/* Split Background (Dark Top + Indigo/Slate Bottom) */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="h-[58%] bg-[#161922] relative overflow-hidden">
+          <div className="hidden md:block absolute -top-24 left-1/3 w-[520px] h-[520px] bg-[#1e222e] rotate-45 opacity-80"></div>
+        </div>
+        <div className="h-[42%] bg-gradient-to-r from-[#4b5cc4] to-[#5a67d8]"></div>
+      </div>
+
+      {/* Main Wrapper with Vertical "REGISTER" Label on the Left */}
+      <div className="relative z-10 flex items-center max-w-5xl w-full my-6">
+        {/* Vertical REGISTER Text Outside Card */}
+        <div className="hidden lg:flex flex-col items-center justify-center mr-6 select-none">
           <span
-            onClick={() => navigate("/")}
-            className="text-xl font-bold tracking-tight text-white cursor-pointer"
+            className="text-xs font-extrabold tracking-[0.55em] text-white/90 uppercase"
+            style={{ writingMode: "vertical-rl", transform: "rotate(180deg)" }}
           >
-            Surplus Exchange
+            REGISTER
           </span>
         </div>
 
-        <div className="max-w-md my-auto py-12">
-          <h1 className="text-4xl sm:text-5xl font-bold leading-tight mb-6">
-            What happens next
-            <br />
-          </h1>
-          <p className="text-gray-400 text-sm sm:text-base leading-relaxed">
-            1. Verify your email with an OTP or link. <br /> 2. Admin reviews and
-            verifies your account. Log in Sell / Buy Products <br /> 3. Start listing
-            or requesting materials. One account can buy and sell.
-          </p>
-        </div>
+        {/* Layered White Card Effect */}
+        <div className="relative w-full">
+          {/* Subtle Stacked Shadow Cards at Bottom */}
+          <div className="hidden sm:block absolute -bottom-2.5 inset-x-4 h-6 bg-white/80 rounded-sm shadow"></div>
+          <div className="hidden sm:block absolute -bottom-5 inset-x-8 h-6 bg-white/50 rounded-sm shadow"></div>
 
-        <div className="hidden md:block text-xs text-gray-500">
-          © Surplus Exchange Platform
-        </div>
-      </div>
-
-      {/* Right Form Section */}
-      <div className="w-full md:w-1/2 bg-[#f7f6f2] flex items-center justify-center p-6 sm:p-10 md:p-12 overflow-y-auto">
-        <div className="bg-white p-6 sm:p-8 rounded-lg shadow-sm border border-gray-200/80 w-full max-w-lg my-6">
-          {/* Top Navigation Toggle */}
-          <div className="flex items-center space-x-3 mb-6">
-            <button
-              type="button"
-              onClick={() => navigate("/login")}
-              className="px-6 py-2 bg-white text-gray-700 text-sm font-medium rounded border border-gray-300 hover:bg-gray-50 transition-colors"
-            >
-              Login
-            </button>
-            <button
-              type="button"
-              className="px-6 py-2 bg-[#c24e00] text-white text-sm font-medium rounded transition-colors"
-            >
-              Register
-            </button>
-          </div>
-
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">
-            Create your account
-          </h2>
-
-          {/* Account Type Toggle (Company vs Individual) */}
-          <div className="mb-6">
-            <label className="block text-xs font-semibold text-gray-600 mb-2">
-              I am registering as
-            </label>
-            <div className="grid grid-cols-2 gap-2 p-1 bg-gray-100 rounded-md">
-              <button
-                type="button"
-                onClick={() => {
-                  setAccountType("Company");
-                  reset();
-                }}
-                className={`py-2 text-sm font-semibold rounded transition-all ${
-                  accountType === "Company"
-                    ? "bg-[#c24e00] text-white shadow-sm"
-                    : "text-gray-700 hover:text-gray-900"
-                }`}
-              >
-                Company
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setAccountType("Individual");
-                  reset();
-                }}
-                className={`py-2 text-sm font-semibold rounded transition-all ${
-                  accountType === "Individual"
-                    ? "bg-[#c24e00] text-white shadow-sm"
-                    : "text-gray-700 hover:text-gray-900"
-                }`}
-              >
-                Individual
-              </button>
+          {/* Primary White Card */}
+          <div className="relative bg-white rounded-sm shadow-2xl p-5 sm:p-8 md:p-12 grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-10 items-stretch">
+            {/* Mobile & Tablet Header (White Background, No Logo, Large Purple-Blue Gradient Icon) */}
+            <div className="md:hidden flex flex-col items-center justify-center bg-white py-3 px-4">
+              <div className="w-24 h-24 rounded-full bg-gradient-to-br from-[#4f5bd5] via-[#5b50d6] to-[#7c3aed] flex items-center justify-center shadow-lg shadow-[#4f5bd5]/30">
+                <UserRound className="w-12 h-12 text-white" strokeWidth={2} />
+              </div>
+              <p className="text-xs font-medium text-gray-500 mt-3 tracking-wide">
+                Create your verified Surplus Exchange account
+              </p>
             </div>
-          </div>
 
-          {/* Error Alert Box */}
-          {serverError && (
-            <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-600 text-xs rounded">
-              {serverError}
-            </div>
-          )}
-
-          {/* Registration Form */}
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            {/* Dynamic Name Input */}
-            <div>
-              <label className="block text-xs font-semibold text-gray-700 mb-1">
-                {accountType === "Company" ? "Company name" : "Full name"}{" "}
-                <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                {...register(
-                  accountType === "Company" ? "companyName" : "fullName",
-                  {
-                    required: `${accountType === "Company" ? "Company name" : "Full name"} is required`,
-                  },
-                )}
-                className="w-full px-3 py-2 bg-white border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-[#c24e00] text-sm text-gray-900"
+            {/* Desktop Left Side Image Card */}
+            <div className="hidden md:block md:col-span-5 relative rounded-sm overflow-hidden min-h-[580px] shadow-md group">
+              <img
+                src={registerSideImg}
+                alt="Surplus Exchange Registration"
+                className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
               />
-              {errors[
-                accountType === "Company" ? "companyName" : "fullName"
-              ] && (
-                <span className="text-red-500 text-xs mt-1 block">
-                  {
-                    errors[
+              {/* Dark Indigo Overlay */}
+              <div className="absolute inset-0 bg-gradient-to-t from-[#1a2035]/90 via-[#1a2035]/20 to-transparent"></div>
+
+              <div
+                onClick={() => navigate("/")}
+                className="absolute top-4 left-4 backdrop-blur-xs px-2 py-1 rounded-xs cursor-pointer"
+              >
+                <img
+                  className="h-14 w-auto object-contain"
+                  src={Logo}
+                  alt="Surplus Exchange Logo"
+                />
+              </div>
+            </div>
+
+            {/* Right Side Form Content */}
+            <div className="md:col-span-7 flex flex-col justify-between">
+              <div>
+                {/* Header: Register_ + Account Type Switch */}
+                <div className="flex flex-wrap items-center justify-between gap-4 mb-7">
+                  <div>
+                    <h1 className="text-3xl sm:text-4xl font-extrabold text-gray-900 tracking-tight">
+                      Register<span className="text-[#4f5bd5]">_</span>
+                    </h1>
+                    <div className="w-12 h-[3px] bg-[#4f5bd5] mt-2"></div>
+                  </div>
+
+                  {/* Compact Account Type Toggle */}
+                  <div className="inline-flex rounded-full bg-gray-100 p-1 border border-gray-200">
+                    <button
+                      type="button"
+                      onClick={() => handleAccountTypeChange("Company")}
+                      className={`px-3.5 py-1 text-[11px] font-bold uppercase tracking-wider rounded-full transition cursor-pointer ${
+                        accountType === "Company"
+                          ? "bg-[#4f5bd5] text-white shadow-xs"
+                          : "text-gray-500 hover:text-gray-800"
+                      }`}
+                    >
+                      Company
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleAccountTypeChange("Individual")}
+                      className={`px-3.5 py-1 text-[11px] font-bold uppercase tracking-wider rounded-full transition cursor-pointer ${
+                        accountType === "Individual"
+                          ? "bg-[#4f5bd5] text-white shadow-xs"
+                          : "text-gray-500 hover:text-gray-800"
+                      }`}
+                    >
+                      Individual
+                    </button>
+                  </div>
+                </div>
+
+                {/* Server Error */}
+                {serverError && (
+                  <div className="mb-4 p-2.5 bg-red-50 border-l-2 border-red-500 text-red-600 text-xs">
+                    {serverError}
+                  </div>
+                )}
+
+                {/* Underline Style Form */}
+                <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+                  {/* Email Field */}
+                  <div>
+                    <div className="relative flex items-center border-b border-gray-300 focus-within:border-[#4f5bd5] pb-1.5">
+                      <input
+                        type="email"
+                        placeholder="you@example.com"
+                        {...register("email", {
+                          required: "Email is required",
+                          pattern: {
+                            value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                            message: "Invalid email address",
+                          },
+                        })}
+                        className="w-full bg-transparent text-sm font-medium text-[#4f5bd5] placeholder-gray-500 focus:outline-none pr-24"
+                      />
+                      {isEmailValid && (
+                        <span className="text-emerald-500 text-xs font-bold mr-2">
+                          ✓
+                        </span>
+                      )}
+                      <span className="text-[10px] font-bold tracking-widest text-gray-900 uppercase shrink-0">
+                        EMAIL <span className="text-red-500">*</span>
+                      </span>
+                    </div>
+                    {errors.email && (
+                      <span className="text-red-500 text-[11px] mt-1 block">
+                        {errors.email.message}
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Password & Confirm Password Row */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                    <div>
+                      <div className="relative flex items-center border-b border-gray-300 focus-within:border-[#4f5bd5] pb-1.5">
+                        <input
+                          type="password"
+                          placeholder="••••••••"
+                          {...register("password", {
+                            required: "Password is required",
+                            minLength: {
+                              value: 6,
+                              message: "Min 6 characters",
+                            },
+                          })}
+                          className="w-full bg-transparent text-sm text-gray-800 placeholder-gray-500 focus:outline-none pr-16"
+                        />
+                        <span className="text-[10px] font-bold tracking-widest text-gray-900 uppercase shrink-0">
+                          PASSWORD <span className="text-red-500">*</span>
+                        </span>
+                      </div>
+                      {errors.password && (
+                        <span className="text-red-500 text-[11px] mt-1 block">
+                          {errors.password.message}
+                        </span>
+                      )}
+                    </div>
+
+                    <div>
+                      <div className="relative flex items-center border-b border-gray-300 focus-within:border-[#4f5bd5] pb-1.5">
+                        <input
+                          type="password"
+                          placeholder="••••••••"
+                          {...register("confirmPassword", {
+                            required: "Confirm password",
+                            validate: (val) =>
+                              val === password || "Passwords do not match",
+                          })}
+                          className="w-full bg-transparent text-sm text-gray-800 placeholder-gray-500 focus:outline-none pr-16"
+                        />
+                        <span className="text-[10px] font-bold tracking-widest text-gray-900 uppercase shrink-0">
+                          CONFIRM <span className="text-red-500">*</span>
+                        </span>
+                      </div>
+                      {errors.confirmPassword && (
+                        <span className="text-red-500 text-[11px] mt-1 block">
+                          {errors.confirmPassword.message}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Company Name / Full Name */}
+                  <div>
+                    <div className="relative flex items-center border-b border-gray-300 focus-within:border-[#4f5bd5] pb-1.5">
+                      <input
+                        type="text"
+                        placeholder={
+                          accountType === "Company"
+                            ? "Enter company name"
+                            : "Enter your full name"
+                        }
+                        {...register(
+                          accountType === "Company"
+                            ? "companyName"
+                            : "fullName",
+                          {
+                            required: `${
+                              accountType === "Company"
+                                ? "Company name"
+                                : "Full name"
+                            } is required`,
+                          },
+                        )}
+                        className="w-full bg-transparent text-sm text-gray-800 placeholder-gray-500 focus:outline-none pr-28"
+                      />
+                      <span className="text-[10px] font-bold tracking-widest text-gray-900 uppercase shrink-0">
+                        {accountType === "Company" ? "COMPANY" : "FULL NAME"}{" "}
+                        <span className="text-red-500">*</span>
+                      </span>
+                    </div>
+                    {errors[
                       accountType === "Company" ? "companyName" : "fullName"
-                    ].message
-                  }
-                </span>
-              )}
-            </div>
+                    ] && (
+                      <span className="text-red-500 text-[11px] mt-1 block">
+                        {
+                          errors[
+                            accountType === "Company"
+                              ? "companyName"
+                              : "fullName"
+                          ].message
+                        }
+                      </span>
+                    )}
+                  </div>
 
-            {/* Email & Phone Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-xs font-semibold text-gray-700 mb-1">
-                  Email <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="email"
-                  {...register("email", {
-                    required: "Email is required",
-                    pattern: {
-                      value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                      message: "Invalid email address",
-                    },
-                  })}
-                  className="w-full px-3 py-2 bg-white border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-[#c24e00] text-sm text-gray-900"
-                />
-                {errors.email && (
-                  <span className="text-red-500 text-xs mt-1 block">
-                    {errors.email.message}
-                  </span>
-                )}
-              </div>
+                  {/* Phone & Trade License / NID No Row */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                    <div>
+                      <div className="relative flex items-center border-b border-gray-300 focus-within:border-[#4f5bd5] pb-1.5">
+                        <input
+                          type="text"
+                          placeholder="017XXXXXXXX"
+                          {...register("phone", {
+                            required: "WhatsApp number is required",
+                          })}
+                          className="w-full bg-transparent text-sm text-gray-800 placeholder-gray-500 focus:outline-none pr-16"
+                        />
+                        <span className="text-[10px] font-bold tracking-widest text-gray-900 uppercase shrink-0">
+                          PHONE <span className="text-red-500">*</span>
+                        </span>
+                      </div>
+                      {errors.phone && (
+                        <span className="text-red-500 text-[11px] mt-1 block">
+                          {errors.phone.message}
+                        </span>
+                      )}
+                    </div>
 
-              <div>
-                <label className="block text-xs font-semibold text-gray-700 mb-1">
-                  Whatsapp number <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  {...register("phone", {
-                    required: "Whatsapp number is required",
-                  })}
-                  className="w-full px-3 py-2 bg-white border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-[#c24e00] text-sm text-gray-900"
-                />
-                {errors.phone && (
-                  <span className="text-red-500 text-xs mt-1 block">
-                    {errors.phone.message}
-                  </span>
-                )}
-              </div>
-            </div>
+                    <div>
+                      <div className="relative flex items-center border-b border-gray-300 focus-within:border-[#4f5bd5] pb-1.5">
+                        <input
+                          type="text"
+                          placeholder={
+                            accountType === "Company"
+                              ? "TL-XXXXXX"
+                              : "NID Number"
+                          }
+                          {...register(
+                            accountType === "Company"
+                              ? "tradeLicenseNo"
+                              : "nidNo",
+                            {
+                              required: `${
+                                accountType === "Company"
+                                  ? "Trade license no."
+                                  : "NID no."
+                              } is required`,
+                            },
+                          )}
+                          className="w-full bg-transparent text-sm text-gray-800 placeholder-gray-500 focus:outline-none pr-24"
+                        />
+                        <span className="text-[10px] font-bold tracking-widest text-gray-900 uppercase shrink-0">
+                          {accountType === "Company" ? "LICENSE NO" : "NID NO"}{" "}
+                          <span className="text-red-500">*</span>
+                        </span>
+                      </div>
+                      {errors[
+                        accountType === "Company" ? "tradeLicenseNo" : "nidNo"
+                      ] && (
+                        <span className="text-red-500 text-[11px] mt-1 block">
+                          {
+                            errors[
+                              accountType === "Company"
+                                ? "tradeLicenseNo"
+                                : "nidNo"
+                            ].message
+                          }
+                        </span>
+                      )}
+                    </div>
+                  </div>
 
-            {/* Dynamic Address Input */}
-            <div>
-              <label className="block text-xs font-semibold text-gray-700 mb-1">
-                {accountType === "Company" ? "Company address" : "Address"}{" "}
-                <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                {...register(
-                  accountType === "Company" ? "companyAddress" : "address",
-                  {
-                    required: "Address is required",
-                  },
-                )}
-                className="w-full px-3 py-2 bg-white border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-[#c24e00] text-sm text-gray-900"
-              />
-              {errors[
-                accountType === "Company" ? "companyAddress" : "address"
-              ] && (
-                <span className="text-red-500 text-xs mt-1 block">
-                  {
-                    errors[
+                  {/* Address Field */}
+                  <div>
+                    <div className="relative flex items-center border-b border-gray-300 focus-within:border-[#4f5bd5] pb-1.5">
+                      <input
+                        type="text"
+                        placeholder={
+                          accountType === "Company"
+                            ? "Office / Company address"
+                            : "Present address"
+                        }
+                        {...register(
+                          accountType === "Company"
+                            ? "companyAddress"
+                            : "address",
+                          {
+                            required: "Address is required",
+                          },
+                        )}
+                        className="w-full bg-transparent text-sm text-gray-800 placeholder-gray-500 focus:outline-none pr-20"
+                      />
+                      <span className="text-[10px] font-bold tracking-widest text-gray-900 uppercase shrink-0">
+                        ADDRESS <span className="text-red-500">*</span>
+                      </span>
+                    </div>
+                    {errors[
                       accountType === "Company" ? "companyAddress" : "address"
-                    ].message
-                  }
-                </span>
-              )}
-            </div>
+                    ] && (
+                      <span className="text-red-500 text-[11px] mt-1 block">
+                        {
+                          errors[
+                            accountType === "Company"
+                              ? "companyAddress"
+                              : "address"
+                          ].message
+                        }
+                      </span>
+                    )}
+                  </div>
 
-            {/* Dynamic Field: Trade License No vs NID No */}
-            <div>
-              <label className="block text-xs font-semibold text-gray-700 mb-1">
-                {accountType === "Company" ? "Trade license no." : "NID no."}{" "}
-                <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                {...register(
-                  accountType === "Company" ? "tradeLicenseNo" : "nidNo",
-                  {
-                    required: `${accountType === "Company" ? "Trade license no." : "NID no."} is required`,
-                  },
-                )}
-                className="w-full px-3 py-2 bg-white border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-[#c24e00] text-sm text-gray-900"
-              />
-              {errors[
-                accountType === "Company" ? "tradeLicenseNo" : "nidNo"
-              ] && (
-                <span className="text-red-500 text-xs mt-1 block">
-                  {
-                    errors[
-                      accountType === "Company" ? "tradeLicenseNo" : "nidNo"
-                    ].message
-                  }
-                </span>
-              )}
-            </div>
+                  {/* Trade License Image vs NID Card Image Upload */}
+                  <div>
+                    <div className="flex items-center justify-between mb-1.5">
+                      <span className="text-[10px] font-bold tracking-widest text-gray-900 uppercase">
+                        {accountType === "Company"
+                          ? "TRADE LICENSE IMAGE"
+                          : "NID CARD IMAGE"}{" "}
+                        <span className="text-red-500">*</span>
+                      </span>
+                      {docImage && (
+                        <button
+                          type="button"
+                          onClick={() => setDocImage("")}
+                          className="text-[11px] text-red-500 hover:underline cursor-pointer"
+                        >
+                          Remove
+                        </button>
+                      )}
+                    </div>
 
-            {/* Password & Confirm Password Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-xs font-semibold text-gray-700 mb-1">
-                  Password <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="password"
-                  {...register("password", {
-                    required: "Password is required",
-                    minLength: {
-                      value: 6,
-                      message: "Minimum 6 characters",
-                    },
-                  })}
-                  className="w-full px-3 py-2 bg-white border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-[#c24e00] text-sm text-gray-900"
-                />
-                {errors.password && (
-                  <span className="text-red-500 text-xs mt-1 block">
-                    {errors.password.message}
-                  </span>
-                )}
+                    <div className="flex items-center justify-between gap-3 border-b border-dashed border-gray-300 pb-2">
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageUpload}
+                        className="w-full text-xs text-gray-500 file:mr-3 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-[11px] file:font-semibold file:bg-[#4f5bd5]/10 file:text-[#4f5bd5] hover:file:bg-[#4f5bd5]/20 cursor-pointer"
+                      />
+                      {docImage && (
+                        <img
+                          src={docImage}
+                          alt="Doc Preview"
+                          className="h-10 w-14 object-cover rounded border border-gray-200 shrink-0"
+                        />
+                      )}
+                    </div>
+                    {docError && (
+                      <span className="text-red-500 text-[11px] mt-1 block">
+                        {docError}
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Terms & Conditions Checkbox */}
+                  <div className="flex items-start space-x-2.5 pt-1">
+                    <input
+                      id="termsCheck"
+                      type="checkbox"
+                      checked={agreedTerms}
+                      onChange={(e) => setAgreedTerms(e.target.checked)}
+                      className="mt-0.5 h-3.5 w-3.5 accent-[#4f5bd5] rounded cursor-pointer"
+                    />
+                    <label
+                      htmlFor="termsCheck"
+                      className="text-[11px] text-gray-500 leading-snug cursor-pointer"
+                    >
+                      By clicking you agree to accept our{" "}
+                      <span className="font-bold text-gray-800">
+                        terms & conditions
+                      </span>
+                      , and confirm your{" "}
+                      <span className="font-bold text-gray-800">
+                        {accountType === "Company"
+                          ? "trade license"
+                          : "NID document"}
+                      </span>{" "}
+                      is valid for admin verification.
+                    </label>
+                  </div>
+
+                  {/* Bottom Bar: Sign In Link + Pill Submit Button */}
+                  <div className="pt-3 flex flex-wrap items-center justify-between gap-4">
+                    <p className="text-xs text-gray-400">
+                      Already have an account ?{" "}
+                      <button
+                        type="button"
+                        onClick={() => navigate("/login")}
+                        className="font-bold text-gray-800 hover:text-[#4f5bd5] transition cursor-pointer"
+                      >
+                        Sign In
+                      </button>
+                    </p>
+
+                    <button
+                      type="submit"
+                      disabled={loading}
+                      className="px-8 py-3 bg-[#4f5bd5] hover:bg-[#3f4bc2] text-white text-xs font-bold tracking-widest uppercase rounded-full shadow-lg shadow-[#4f5bd5]/30 transition-all cursor-pointer disabled:opacity-50"
+                    >
+                      {loading ? "CREATING..." : "OPEN ACCOUNT"}
+                    </button>
+                  </div>
+                </form>
               </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-gray-700 mb-1">
-                  Confirm password <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="password"
-                  {...register("confirmPassword", {
-                    required: "Please confirm password",
-                    validate: (value) =>
-                      value === password || "Passwords do not match",
-                  })}
-                  className="w-full px-3 py-2 bg-white border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-[#c24e00] text-sm text-gray-900"
-                />
-                {errors.confirmPassword && (
-                  <span className="text-red-500 text-xs mt-1 block">
-                    {errors.confirmPassword.message}
-                  </span>
-                )}
-              </div>
             </div>
-
-            {/* Submit Button */}
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full mt-4 py-3 bg-[#c24e00] hover:bg-[#a84300] text-white text-sm font-semibold rounded transition-colors cursor-pointer disabled:opacity-50"
-            >
-              {loading ? "Creating account..." : "Create account"}
-            </button>
-          </form>
-
-          {/* Footer Info Text */}
-          <p className="mt-4 text-xs text-gray-500 leading-normal">
-            We email you a verification code. An admin checks your{" "}
-            {accountType === "Company" ? "trade license" : "NID number"} before
-            approving the account.
-          </p>
+          </div>
         </div>
       </div>
     </div>

@@ -157,6 +157,27 @@
       "paymentMethod": "Nagad",
       "orderStatus": "confirmed",
       "createdAt": "2026-11-16"
+    },
+    {
+      "id": "ORD-1795065621640",
+      "receiptNo": "REC-835903",
+      "transactionId": "TXN-65621640",
+      "dateTime": "19 Nov 2026, 11:20 am",
+      "listingId": "D2Urrb5",
+      "listingTitle": "Rubi Cement",
+      "quantity": 1000,
+      "unit": "bags",
+      "unitPrice": 1200,
+      "buyerId": "1UJdN57cvLk",
+      "buyerName": "SB Construction",
+      "sellerId": "-4eTSfRyg0g",
+      "sellerName": "Minhazul Islam Bhuiyan",
+      "totalAmount": 1200000,
+      "advancePaid": 1200,
+      "dueBalance": 1198800,
+      "paymentMethod": "bKash",
+      "status": "confirmed",
+      "createdAt": "2026-11-19"
     }
   ],
   "notifications": [
@@ -183,6 +204,18 @@
       "message": "SB Construction confirmed an order for \"Rubi Cement\" and paid ৳1,200 advance. Click to view payment receipt.",
       "isRead": true,
       "createdAt": "2026-11-18T17:28:12.918Z"
+    },
+    {
+      "id": "notif_1795065621703",
+      "userId": "-4eTSfRyg0g",
+      "type": "ORDER_CONFIRMED",
+      "orderId": "ORD-1795065621640",
+      "receiptNo": "REC-835903",
+      "listingId": "D2Urrb5",
+      "title": "New Order Confirmed & Receipt Ready",
+      "message": "SB Construction confirmed an order for \"Rubi Cement\" and paid ৳1,200 advance. Click to view payment receipt.",
+      "isRead": true,
+      "createdAt": "2026-11-19T05:20:21.640Z"
     }
   ],
   "receipts": []
