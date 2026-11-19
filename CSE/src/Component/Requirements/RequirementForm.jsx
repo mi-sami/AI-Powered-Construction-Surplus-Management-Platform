@@ -12,8 +12,11 @@ const RequirementForm = ({
   onFindMatches,
   listings = [],
 }) => {
-  const { categories, brands, locations, units } = buildDropdownOptions(listings);
-  const activeSpecifications = getSpecificationsByType(requirements.productType);
+  const { categories, brands, locations, units } =
+    buildDropdownOptions(listings);
+  const activeSpecifications = getSpecificationsByType(
+    requirements.productType,
+  );
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -188,13 +191,15 @@ const RequirementForm = ({
           </div>
         </div>
 
-        {/* Submit Button */}
-        <button
-          type="submit"
-          className="w-full py-2.5 bg-[#c24e00] hover:bg-[#a84300] text-white font-semibold rounded transition-colors cursor-pointer mt-2"
-        >
-          Find matches
-        </button>
+        {/* Submit Button (Centered) */}
+        <div className="flex justify-center pt-2">
+          <button
+            type="submit"
+            className="px-6 py-2.5 text-xs font-bold tracking-wider rounded-full bg-[#4f5bd5] hover:bg-[#3f4bc2] text-white shadow-md shadow-[#4f5bd5]/25 transition-all cursor-pointer disabled:opacity-50"
+          >
+            Find matches
+          </button>
+        </div>
       </form>
     </div>
   );
