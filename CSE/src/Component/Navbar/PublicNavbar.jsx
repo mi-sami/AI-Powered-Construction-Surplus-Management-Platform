@@ -39,7 +39,7 @@ const PublicNavbar = () => {
               >
                 {link.name}
                 {activeTab === link.name && (
-                  <span className="absolute bottom-0 left-0 w-full h-[2px] bg-[#008ba9] rounded-full"></span>
+                  <span className="absolute bottom-0 left-0 w-full h-[2px] bg-[#3f4bc2] rounded-full"></span>
                 )}
               </a>
             ))}
@@ -49,7 +49,7 @@ const PublicNavbar = () => {
         {/* Right Side Buttons */}
         <div className="hidden md:flex items-center space-x-3">
           <Link to="/login">
-            <button className="px-5 py-2 text-sm font-medium text-gray-900 bg-white rounded hover:bg-gray-100 transition-all cursor-pointer">
+            <button className="px-5 py-2 text-sm font-medium text-gray-900 bg-white rounded hover:bg-gray-100 transition-all cursor-pointer rounded-full">
               Login
             </button>
           </Link>

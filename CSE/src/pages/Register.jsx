@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import { UserRound } from "lucide-react";
+import { UserRound, Loader2, CheckCircle2, ShieldAlert } from "lucide-react";
+import Tesseract from "tesseract.js";
 import { handleApiAction } from "../Utils/ApiHandler";
 import registerSideImg from "../assets/pexels-mart-production-7709283.jpg";
 import Logo from "../assets/surplusx_logo_transparent.png";
@@ -12,6 +13,8 @@ const Register = () => {
   const [serverError, setServerError] = useState("");
   const [docImage, setDocImage] = useState("");
   const [docError, setDocError] = useState("");
+  const [isVerifyingDoc, setIsVerifyingDoc] = useState(false);
+  const [isDocVerified, setIsDocVerified] = useState(false);
   const [agreedTerms, setAgreedTerms] = useState(true);
   const navigate = useNavigate();
 
@@ -25,26 +28,171 @@ const Register = () => {
 
   const password = watch("password");
   const emailValue = watch("email");
+  const enteredNidNo = watch("nidNo");
+  const enteredLicenseNo = watch("tradeLicenseNo");
 
-  // ইমেজ ফাইলকে Base64-এ রূপান্তর ও ভ্যালিডেশন
+  // ডকুমেন্টের টেক্সট বিশ্লেষণ করে NID বা Trade License কি না তা যাচাই
+  const verifyDocumentContent = async (imageDataUrl, type) => {
+    // ইংরেজি ও বাংলা উভয় টেক্সট রিড করার জন্য 'eng+ben'
+    const {
+      data: { text },
+    } = await Tesseract.recognize(imageDataUrl, "eng+ben");
+
+    const normalizedText = text.toLowerCase().replace(/\s+/g, " ");
+    const digitsOnlyText = text.replace(/\D/g, "");
+
+    if (type === "Individual") {
+      // বাংলাদেশি NID কার্ডের কমন কীওয়ার্ড
+      const nidKeywords = [
+        "national id",
+        "nid",
+        "government of the people",
+        "people's republic of bangladesh",
+        "date of birth",
+        "id no",
+        "blood group",
+        "জাতীয় পরিচয়",
+        "পরিচয় পত্র",
+        "গণপ্রজাতন্ত্রী বাংলাদেশ",
+        "জন্ম তারিখ",
+      ];
+
+      const hasNidKeyword = nidKeywords.some((kw) =>
+        normalizedText.includes(kw),
+      );
+      // ১০, ১৩ অথবা ১৭ ডিজিটের NID নম্বর আছে কি না
+      const hasNidNumberPattern = /\b\d{10}\b|\b\d{13}\b|\b\d{17}\b/.test(
+        digitsOnlyText,
+      );
+
+      // ইউজার যদি ফর্মে NID নম্বর লিখে থাকে, তা ছবির নম্বরের সাথে মিলছে কি না চেক
+      const cleanEnteredNid = (enteredNidNo || "").replace(/\D/g, "");
+      const matchesEnteredNid =
+        cleanEnteredNid.length >= 10
+          ? digitsOnlyText.includes(cleanEnteredNid)
+          : true;
+
+      if (!hasNidKeyword && !hasNidNumberPattern) {
+        return {
+          valid: false,
+          message:
+            "Invalid NID image! Please upload a clear photo of an official NID card.",
+        };
+      }
+
+      if (!matchesEnteredNid) {
+        return {
+          valid: false,
+          message:
+            "Uploaded NID number does not match the NID No. entered above.",
+        };
+      }
+
+      return { valid: true };
+    } else {
+      // Trade License-এর কমন কীওয়ার্ড
+      const licenseKeywords = [
+        "trade license",
+        "trade licence",
+        "license no",
+        "licence no",
+        "city corporation",
+        "municipality",
+        "pourashava",
+        "union parishad",
+        "business",
+        "proprietor",
+        "ট্রেড লাইসেন্স",
+        "লাইসেন্স নং",
+        "সিটি কর্পোরেশন",
+        "পৌরসভা",
+        "ইউনিয়ন পরিষদ",
+      ];
+
+      const hasLicenseKeyword = licenseKeywords.some((kw) =>
+        normalizedText.includes(kw),
+      );
+
+      const cleanEnteredLicense = (enteredLicenseNo || "")
+        .toLowerCase()
+        .replace(/[^a-z0-9]/g, "");
+      const cleanOcrAlphaNum = normalizedText.replace(/[^a-z0-9]/g, "");
+
+      const matchesEnteredLicense =
+        cleanEnteredLicense.length >= 4
+          ? cleanOcrAlphaNum.includes(cleanEnteredLicense)
+          : true;
+
+      if (!hasLicenseKeyword) {
+        return {
+          valid: false,
+          message:
+            "Invalid Trade License! Please upload a clear image of an official Trade License document.",
+        };
+      }
+
+      if (!matchesEnteredLicense) {
+        return {
+          valid: false,
+          message:
+            "Uploaded document does not match the Trade License No. entered above.",
+        };
+      }
+
+      return { valid: true };
+    }
+  };
+
+  // ইমেজ আপলোড, সাইজ চেক ও OCR ভেরিফিকেশন
   const handleImageUpload = (e) => {
     setDocError("");
+    setIsDocVerified(false);
+    setDocImage("");
+
     const file = e.target.files?.[0];
-    if (!file) {
-      setDocImage("");
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      setDocError("Only image files (JPG, PNG, WEBP) are allowed.");
+      e.target.value = "";
       return;
     }
 
-    if (file.size > 2 * 1024 * 1024) {
-      setDocError("Image size must be less than 2MB.");
+    if (file.size > 3 * 1024 * 1024) {
+      setDocError("Image size must be less than 3MB.");
       e.target.value = "";
       return;
     }
 
     const reader = new FileReader();
-    reader.onloadend = () => {
-      setDocImage(reader.result);
+    reader.onloadend = async () => {
+      const base64Img = reader.result;
+      setIsVerifyingDoc(true);
+
+      try {
+        const result = await verifyDocumentContent(base64Img, accountType);
+
+        if (result.valid) {
+          setDocImage(base64Img);
+          setIsDocVerified(true);
+          setDocError("");
+        } else {
+          setDocImage("");
+          setIsDocVerified(false);
+          setDocError(result.message);
+          e.target.value = "";
+        }
+      } catch (err) {
+        console.error("OCR Verification Error:", err);
+        setDocError(
+          "Could not verify document. Please upload a clearer, well-lit photo.",
+        );
+        e.target.value = "";
+      } finally {
+        setIsVerifyingDoc(false);
+      }
     };
+
     reader.readAsDataURL(file);
   };
 
@@ -53,16 +201,23 @@ const Register = () => {
     setAccountType(type);
     setDocImage("");
     setDocError("");
+    setIsDocVerified(false);
+    setIsVerifyingDoc(false);
     reset();
   };
 
   // Form Submission
   const onSubmit = async (data) => {
-    if (!docImage) {
+    if (isVerifyingDoc) {
+      setDocError("Please wait while we verify your document...");
+      return;
+    }
+
+    if (!docImage || !isDocVerified) {
       setDocError(
         accountType === "Company"
-          ? "Trade license image is required."
-          : "NID card image is required.",
+          ? "A valid verified Trade License image is required."
+          : "A valid verified NID Card image is required.",
       );
       return;
     }
@@ -117,6 +272,7 @@ const Register = () => {
 
       alert("Account created successfully! Please wait for admin approval.");
       setDocImage("");
+      setIsDocVerified(false);
       reset();
       navigate("/login");
     } catch (error) {
@@ -162,7 +318,7 @@ const Register = () => {
 
           {/* Primary White Card */}
           <div className="relative bg-white rounded-sm shadow-2xl p-5 sm:p-8 md:p-12 grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-10 items-stretch">
-            {/* Mobile & Tablet Header (White Background, No Logo, Large Purple-Blue Gradient Icon) */}
+            {/* Mobile & Tablet Header */}
             <div className="md:hidden flex flex-col items-center justify-center bg-white py-3 px-4">
               <div className="w-24 h-24 rounded-full bg-gradient-to-br from-[#4f5bd5] via-[#5b50d6] to-[#7c3aed] flex items-center justify-center shadow-lg shadow-[#4f5bd5]/30">
                 <UserRound className="w-12 h-12 text-white" strokeWidth={2} />
@@ -179,7 +335,6 @@ const Register = () => {
                 alt="Surplus Exchange Registration"
                 className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
               />
-              {/* Dark Indigo Overlay */}
               <div className="absolute inset-0 bg-gradient-to-t from-[#1a2035]/90 via-[#1a2035]/20 to-transparent"></div>
 
               <div
@@ -242,90 +397,12 @@ const Register = () => {
 
                 {/* Underline Style Form */}
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-                  {/* Email Field */}
-                  <div>
-                    <div className="relative flex items-center border-b border-gray-300 focus-within:border-[#4f5bd5] pb-1.5">
-                      <input
-                        type="email"
-                        placeholder="you@example.com"
-                        {...register("email", {
-                          required: "Email is required",
-                          pattern: {
-                            value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                            message: "Invalid email address",
-                          },
-                        })}
-                        className="w-full bg-transparent text-sm font-medium text-[#4f5bd5] placeholder-gray-500 focus:outline-none pr-24"
-                      />
-                      {isEmailValid && (
-                        <span className="text-emerald-500 text-xs font-bold mr-2">
-                          ✓
-                        </span>
-                      )}
-                      <span className="text-[10px] font-bold tracking-widest text-gray-900 uppercase shrink-0">
-                        EMAIL <span className="text-red-500">*</span>
-                      </span>
-                    </div>
-                    {errors.email && (
-                      <span className="text-red-500 text-[11px] mt-1 block">
-                        {errors.email.message}
-                      </span>
-                    )}
-                  </div>
-
-                  {/* Password & Confirm Password Row */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                    <div>
-                      <div className="relative flex items-center border-b border-gray-300 focus-within:border-[#4f5bd5] pb-1.5">
-                        <input
-                          type="password"
-                          placeholder="••••••••"
-                          {...register("password", {
-                            required: "Password is required",
-                            minLength: {
-                              value: 6,
-                              message: "Min 6 characters",
-                            },
-                          })}
-                          className="w-full bg-transparent text-sm text-gray-800 placeholder-gray-500 focus:outline-none pr-16"
-                        />
-                        <span className="text-[10px] font-bold tracking-widest text-gray-900 uppercase shrink-0">
-                          PASSWORD <span className="text-red-500">*</span>
-                        </span>
-                      </div>
-                      {errors.password && (
-                        <span className="text-red-500 text-[11px] mt-1 block">
-                          {errors.password.message}
-                        </span>
-                      )}
-                    </div>
-
-                    <div>
-                      <div className="relative flex items-center border-b border-gray-300 focus-within:border-[#4f5bd5] pb-1.5">
-                        <input
-                          type="password"
-                          placeholder="••••••••"
-                          {...register("confirmPassword", {
-                            required: "Confirm password",
-                            validate: (val) =>
-                              val === password || "Passwords do not match",
-                          })}
-                          className="w-full bg-transparent text-sm text-gray-800 placeholder-gray-500 focus:outline-none pr-16"
-                        />
-                        <span className="text-[10px] font-bold tracking-widest text-gray-900 uppercase shrink-0">
-                          CONFIRM <span className="text-red-500">*</span>
-                        </span>
-                      </div>
-                      {errors.confirmPassword && (
-                        <span className="text-red-500 text-[11px] mt-1 block">
-                          {errors.confirmPassword.message}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-
                   {/* Company Name / Full Name */}
                   <div>
+                    <label className="block text-[10px] font-bold tracking-widest text-gray-900 uppercase mb-1">
+                      {accountType === "Company" ? "COMPANY" : "FULL NAME"}{" "}
+                      <span className="text-red-500">*</span>
+                    </label>
                     <div className="relative flex items-center border-b border-gray-300 focus-within:border-[#4f5bd5] pb-1.5">
                       <input
                         type="text"
@@ -346,12 +423,8 @@ const Register = () => {
                             } is required`,
                           },
                         )}
-                        className="w-full bg-transparent text-sm text-gray-800 placeholder-gray-500 focus:outline-none pr-28"
+                        className="w-full bg-transparent text-sm text-gray-800 placeholder-gray-500 focus:outline-none"
                       />
-                      <span className="text-[10px] font-bold tracking-widest text-gray-900 uppercase shrink-0">
-                        {accountType === "Company" ? "COMPANY" : "FULL NAME"}{" "}
-                        <span className="text-red-500">*</span>
-                      </span>
                     </div>
                     {errors[
                       accountType === "Company" ? "companyName" : "fullName"
@@ -368,9 +441,94 @@ const Register = () => {
                     )}
                   </div>
 
+                  {/* Email Field */}
+                  <div>
+                    <label className="block text-[10px] font-bold tracking-widest text-gray-900 uppercase mb-1">
+                      EMAIL <span className="text-red-500">*</span>
+                    </label>
+                    <div className="relative flex items-center border-b border-gray-300 focus-within:border-[#4f5bd5] pb-1.5">
+                      <input
+                        type="email"
+                        placeholder="you@example.com"
+                        {...register("email", {
+                          required: "Email is required",
+                          pattern: {
+                            value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                            message: "Invalid email address",
+                          },
+                        })}
+                        className="w-full bg-transparent text-sm font-medium text-[#4f5bd5] placeholder-gray-500 focus:outline-none pr-6"
+                      />
+                      {isEmailValid && (
+                        <span className="text-emerald-500 text-xs font-bold shrink-0">
+                          ✓
+                        </span>
+                      )}
+                    </div>
+                    {errors.email && (
+                      <span className="text-red-500 text-[11px] mt-1 block">
+                        {errors.email.message}
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Password & Confirm Password Row */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                    <div>
+                      <label className="block text-[10px] font-bold tracking-widest text-gray-900 uppercase mb-1">
+                        PASSWORD <span className="text-red-500">*</span>
+                      </label>
+                      <div className="relative flex items-center border-b border-gray-300 focus-within:border-[#4f5bd5] pb-1.5">
+                        <input
+                          type="password"
+                          placeholder="••••••••"
+                          {...register("password", {
+                            required: "Password is required",
+                            minLength: {
+                              value: 6,
+                              message: "Min 6 characters",
+                            },
+                          })}
+                          className="w-full bg-transparent text-sm text-gray-800 placeholder-gray-500 focus:outline-none"
+                        />
+                      </div>
+                      {errors.password && (
+                        <span className="text-red-500 text-[11px] mt-1 block">
+                          {errors.password.message}
+                        </span>
+                      )}
+                    </div>
+
+                    <div>
+                      <label className="block text-[10px] font-bold tracking-widest text-gray-900 uppercase mb-1">
+                        CONFIRM <span className="text-red-500">*</span>
+                      </label>
+                      <div className="relative flex items-center border-b border-gray-300 focus-within:border-[#4f5bd5] pb-1.5">
+                        <input
+                          type="password"
+                          placeholder="••••••••"
+                          {...register("confirmPassword", {
+                            required: "Confirm password",
+                            validate: (val) =>
+                              val === password || "Passwords do not match",
+                          })}
+                          className="w-full bg-transparent text-sm text-gray-800 placeholder-gray-500 focus:outline-none"
+                        />
+                      </div>
+                      {errors.confirmPassword && (
+                        <span className="text-red-500 text-[11px] mt-1 block">
+                          {errors.confirmPassword.message}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
                   {/* Phone & Trade License / NID No Row */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                     <div>
+                      <label className="block text-[10px] font-bold tracking-widest text-gray-900 uppercase mb-1">
+                        PHONE <span className="text-red-500">*</span>
+                      </label>
                       <div className="relative flex items-center border-b border-gray-300 focus-within:border-[#4f5bd5] pb-1.5">
                         <input
                           type="text"
@@ -378,11 +536,8 @@ const Register = () => {
                           {...register("phone", {
                             required: "WhatsApp number is required",
                           })}
-                          className="w-full bg-transparent text-sm text-gray-800 placeholder-gray-500 focus:outline-none pr-16"
+                          className="w-full bg-transparent text-sm text-gray-800 placeholder-gray-500 focus:outline-none"
                         />
-                        <span className="text-[10px] font-bold tracking-widest text-gray-900 uppercase shrink-0">
-                          PHONE <span className="text-red-500">*</span>
-                        </span>
                       </div>
                       {errors.phone && (
                         <span className="text-red-500 text-[11px] mt-1 block">
@@ -392,6 +547,10 @@ const Register = () => {
                     </div>
 
                     <div>
+                      <label className="block text-[10px] font-bold tracking-widest text-gray-900 uppercase mb-1">
+                        {accountType === "Company" ? "LICENSE NO" : "NID NO"}{" "}
+                        <span className="text-red-500">*</span>
+                      </label>
                       <div className="relative flex items-center border-b border-gray-300 focus-within:border-[#4f5bd5] pb-1.5">
                         <input
                           type="text"
@@ -412,12 +571,8 @@ const Register = () => {
                               } is required`,
                             },
                           )}
-                          className="w-full bg-transparent text-sm text-gray-800 placeholder-gray-500 focus:outline-none pr-24"
+                          className="w-full bg-transparent text-sm text-gray-800 placeholder-gray-500 focus:outline-none"
                         />
-                        <span className="text-[10px] font-bold tracking-widest text-gray-900 uppercase shrink-0">
-                          {accountType === "Company" ? "LICENSE NO" : "NID NO"}{" "}
-                          <span className="text-red-500">*</span>
-                        </span>
                       </div>
                       {errors[
                         accountType === "Company" ? "tradeLicenseNo" : "nidNo"
@@ -437,6 +592,9 @@ const Register = () => {
 
                   {/* Address Field */}
                   <div>
+                    <label className="block text-[10px] font-bold tracking-widest text-gray-900 uppercase mb-1">
+                      ADDRESS <span className="text-red-500">*</span>
+                    </label>
                     <div className="relative flex items-center border-b border-gray-300 focus-within:border-[#4f5bd5] pb-1.5">
                       <input
                         type="text"
@@ -453,11 +611,8 @@ const Register = () => {
                             required: "Address is required",
                           },
                         )}
-                        className="w-full bg-transparent text-sm text-gray-800 placeholder-gray-500 focus:outline-none pr-20"
+                        className="w-full bg-transparent text-sm text-gray-800 placeholder-gray-500 focus:outline-none"
                       />
-                      <span className="text-[10px] font-bold tracking-widest text-gray-900 uppercase shrink-0">
-                        ADDRESS <span className="text-red-500">*</span>
-                      </span>
                     </div>
                     {errors[
                       accountType === "Company" ? "companyAddress" : "address"
@@ -474,19 +629,22 @@ const Register = () => {
                     )}
                   </div>
 
-                  {/* Trade License Image vs NID Card Image Upload */}
+                  {/* Trade License Image vs NID Card Image Upload with OCR Verification */}
                   <div>
                     <div className="flex items-center justify-between mb-1.5">
-                      <span className="text-[10px] font-bold tracking-widest text-gray-900 uppercase">
+                      <label className="text-[10px] font-bold tracking-widest text-gray-900 uppercase">
                         {accountType === "Company"
                           ? "TRADE LICENSE IMAGE"
                           : "NID CARD IMAGE"}{" "}
                         <span className="text-red-500">*</span>
-                      </span>
-                      {docImage && (
+                      </label>
+                      {docImage && !isVerifyingDoc && (
                         <button
                           type="button"
-                          onClick={() => setDocImage("")}
+                          onClick={() => {
+                            setDocImage("");
+                            setIsDocVerified(false);
+                          }}
                           className="text-[11px] text-red-500 hover:underline cursor-pointer"
                         >
                           Remove
@@ -498,21 +656,51 @@ const Register = () => {
                       <input
                         type="file"
                         accept="image/*"
+                        disabled={isVerifyingDoc}
                         onChange={handleImageUpload}
-                        className="w-full text-xs text-gray-500 file:mr-3 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-[11px] file:font-semibold file:bg-[#4f5bd5]/10 file:text-[#4f5bd5] hover:file:bg-[#4f5bd5]/20 cursor-pointer"
+                        className="w-full text-xs text-gray-500 file:mr-3 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-[11px] file:font-semibold file:bg-[#4f5bd5]/10 file:text-[#4f5bd5] hover:file:bg-[#4f5bd5]/20 cursor-pointer disabled:opacity-50"
                       />
-                      {docImage && (
+                      {docImage && isDocVerified && (
                         <img
                           src={docImage}
                           alt="Doc Preview"
-                          className="h-10 w-14 object-cover rounded border border-gray-200 shrink-0"
+                          className="h-10 w-14 object-cover rounded border border-emerald-400 shrink-0"
                         />
                       )}
                     </div>
+
+                    {/* Verification Status Messages */}
+                    {isVerifyingDoc && (
+                      <div className="flex items-center gap-1.5 text-[#4f5bd5] text-[11px] font-medium mt-1.5">
+                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                        <span>
+                          Scanning & verifying{" "}
+                          {accountType === "Company"
+                            ? "Trade License"
+                            : "NID Card"}
+                          ...
+                        </span>
+                      </div>
+                    )}
+
+                    {isDocVerified && !isVerifyingDoc && (
+                      <div className="flex items-center gap-1.5 text-emerald-600 text-[11px] font-semibold mt-1.5">
+                        <CheckCircle2 className="w-3.5 h-3.5" />
+                        <span>
+                          Valid{" "}
+                          {accountType === "Company"
+                            ? "Trade License"
+                            : "NID Card"}{" "}
+                          verified!
+                        </span>
+                      </div>
+                    )}
+
                     {docError && (
-                      <span className="text-red-500 text-[11px] mt-1 block">
-                        {docError}
-                      </span>
+                      <div className="flex items-start gap-1.5 text-red-500 text-[11px] font-medium mt-1.5">
+                        <ShieldAlert className="w-3.5 h-3.5 shrink-0 mt-0.5" />
+                        <span>{docError}</span>
+                      </div>
                     )}
                   </div>
 
@@ -558,10 +746,14 @@ const Register = () => {
 
                     <button
                       type="submit"
-                      disabled={loading}
-                      className="px-8 py-3 bg-[#4f5bd5] hover:bg-[#3f4bc2] text-white text-xs font-bold tracking-widest uppercase rounded-full shadow-lg shadow-[#4f5bd5]/30 transition-all cursor-pointer disabled:opacity-50"
+                      disabled={loading || isVerifyingDoc || !isDocVerified}
+                      className="px-8 py-3 bg-[#4f5bd5] hover:bg-[#3f4bc2] text-white text-xs font-bold tracking-widest uppercase rounded-full shadow-lg shadow-[#4f5bd5]/30 transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      {loading ? "CREATING..." : "OPEN ACCOUNT"}
+                      {loading
+                        ? "CREATING..."
+                        : isVerifyingDoc
+                          ? "VERIFYING DOC..."
+                          : "OPEN ACCOUNT"}
                     </button>
                   </div>
                 </form>

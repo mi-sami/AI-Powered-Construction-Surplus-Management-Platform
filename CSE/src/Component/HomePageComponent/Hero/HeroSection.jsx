@@ -69,13 +69,13 @@ const HeroSection = () => {
         {/* Centered Action Buttons */}
         <div className="flex flex-wrap items-center justify-center gap-4 pt-3">
           <Link to="/register">
-            <button className="px-7 py-3 bg-[#c24e00] hover:bg-[#a84300] text-white font-semibold rounded shadow-md transition-all cursor-pointer">
+            <button className="px-9 py-3 bg-[#4f5bd5] hover:bg-[#3f4bc2] text-white text-xs font-bold tracking-widest uppercase rounded-full shadow-lg shadow-[#4f5bd5]/30 transition-all cursor-pointer disabled:opacity-50">
               Register
             </button>
           </Link>
 
           <Link to="/login">
-            <button className="px-7 py-3 bg-white text-gray-900 hover:bg-gray-100 font-semibold rounded shadow-md transition-all cursor-pointer">
+            <button className="px-9 py-3 text-sm font-medium text-gray-900 bg-white rounded hover:bg-gray-200 transition-all cursor-pointer rounded-full">
               Login
             </button>
           </Link>
