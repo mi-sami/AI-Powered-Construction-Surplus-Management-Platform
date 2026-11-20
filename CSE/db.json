@@ -195,6 +195,27 @@
       "paymentMethod": "bKash",
       "status": "confirmed",
       "createdAt": "2026-11-19"
+    },
+    {
+      "id": "ORD-1795101750643",
+      "receiptNo": "REC-249042",
+      "transactionId": "TXN-01750643",
+      "dateTime": "19 Nov 2026, 09:22 pm",
+      "listingId": "imrHxe9",
+      "listingTitle": "Red Bricks",
+      "quantity": 10000,
+      "unit": "pcs",
+      "unitPrice": 30,
+      "buyerId": "u_1795099077121",
+      "buyerName": "sathi Begum",
+      "sellerId": "-4eTSfRyg0g",
+      "sellerName": "Minhazul Islam Bhuiyan",
+      "totalAmount": 300000,
+      "advancePaid": 0,
+      "dueBalance": 300000,
+      "paymentMethod": "bKash",
+      "status": "confirmed",
+      "createdAt": "2026-11-19"
     }
   ],
   "notifications": [
@@ -233,6 +254,18 @@
       "message": "SB Construction confirmed an order for \"Rubi Cement\" and paid ৳1,200 advance. Click to view payment receipt.",
       "isRead": true,
       "createdAt": "2026-11-19T05:20:21.640Z"
+    },
+    {
+      "id": "notif_1795101750799",
+      "userId": "-4eTSfRyg0g",
+      "type": "ORDER_CONFIRMED",
+      "orderId": "ORD-1795101750643",
+      "receiptNo": "REC-249042",
+      "listingId": "imrHxe9",
+      "title": "New Order Confirmed & Receipt Ready",
+      "message": "sathi Begum confirmed an order for \"Red Bricks\" and paid ৳0 advance. Click to view payment receipt.",
+      "isRead": false,
+      "createdAt": "2026-11-19T15:22:30.643Z"
     }
   ],
   "receipts": []
