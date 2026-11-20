@@ -136,13 +136,15 @@ const FilterSidebar = ({ filters, setFilters, onApplyFilters, onResetFilters }) 
         </div>
 
         {/* Apply Filters Button */}
+        <div className="flex justify-center">
         <button
           type="button"
           onClick={onApplyFilters}
-          className="w-full py-2.5 bg-[#c24e00] hover:bg-[#007690] text-white font-semibold rounded transition-colors cursor-pointer mt-2"
+          className="px-6 py-2.5 text-xs font-bold tracking-wider rounded-full bg-[#4f5bd5] hover:bg-[#3f4bc2] text-white shadow-md shadow-[#4f5bd5]/25 transition-all cursor-pointer disabled:opacity-50"
         >
           Apply Filters
         </button>
+        </div>
       </div>
     </div>
   );

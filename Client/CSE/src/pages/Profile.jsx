@@ -8,8 +8,7 @@ import AccountDetails from "../Component/Profilecomponent/AccountDetails.jsx";
 import MyProjects from "../Component/Profilecomponent/MyProjects.jsx";
 import { handleApiAction } from "../Utils/ApiHandler";
 import { fetchUserStats } from "../Feature/userStatsSlice";
-import { fetchListings } from "../Feature/listingSlice"; // 👈 fetchListings Import
-import { deleteListingThunk } from "../Feature/listingSlice";
+import { fetchListings, deleteListingThunk } from "../Feature/listingSlice";
 
 const Profile = () => {
   const { user, setUser, logOut } = useAuthInfo();
@@ -37,13 +36,15 @@ const Profile = () => {
     register,
     handleSubmit,
     setValue,
+    watch,
+    reset,
     formState: { errors },
   } = useForm();
 
   useEffect(() => {
     if (user?.id) {
       dispatch(fetchUserStats(user.id));
-      dispatch(fetchListings()); // 👈 Fetch listings from DB
+      dispatch(fetchListings());
 
       setValue("name", user.name || "");
       setValue("email", user.email || "");
@@ -53,8 +54,26 @@ const Profile = () => {
         "licenseOrNid",
         isCompany ? user.tradeLicenseNo || "" : user.nidNo || "",
       );
+      setValue("currentPassword", "");
+      setValue("newPassword", "");
+      setValue("confirmNewPassword", "");
     }
   }, [user, dispatch, setValue, isCompany]);
+
+  // Cancel বাটনে ক্লিক করলে আগের ডাটা রিসেট হবে ও পাসওয়ার্ড ঘর খালি হবে
+  const handleResetForm = () => {
+    setUpdateSuccess("");
+    reset({
+      name: user?.name || "",
+      email: user?.email || "",
+      phone: user?.phone || "",
+      address: user?.address || "",
+      licenseOrNid: isCompany ? user?.tradeLicenseNo || "" : user?.nidNo || "",
+      currentPassword: "",
+      newPassword: "",
+      confirmNewPassword: "",
+    });
+  };
 
   const handleLogout = () => {
     if (typeof logOut === "function") {
@@ -70,26 +89,53 @@ const Profile = () => {
     setLoading(true);
     setUpdateSuccess("");
 
+    // ১. পাসওয়ার্ড পরিবর্তনের ইনপুট দেওয়া থাকলে বর্তমান পাসওয়ার্ড যাচাই
+    if (formData.newPassword) {
+      if (String(formData.currentPassword) !== String(user.password)) {
+        alert("Current password is incorrect!");
+        setLoading(false);
+        return;
+      }
+    }
+
+    const updatePayload = {
+      id: user.id,
+      name: formData.name,
+      email: formData.email,
+      phone: formData.phone,
+      address: formData.address,
+      ...(formData.newPassword ? { password: formData.newPassword } : {}),
+    };
+
     try {
       const updatedUserResponse = await handleApiAction({
         action: "EDIT",
         target: "users",
-        payload: {
-          id: user.id,
-          name: formData.name,
-          email: formData.email,
-          phone: formData.phone,
-          address: formData.address,
-        },
+        payload: updatePayload,
       });
 
       if (updatedUserResponse) {
-        const newUserData = { ...user, ...updatedUserResponse };
+        const newUserData = {
+          ...user,
+          ...updatePayload,
+          ...updatedUserResponse,
+        };
         setUser(newUserData);
         localStorage.setItem("user", JSON.stringify(newUserData));
-        setUpdateSuccess("Profile updated successfully!");
+
+        // পাসওয়ার্ড ফিল্ডগুলো ক্লিয়ার করা
+        setValue("currentPassword", "");
+        setValue("newPassword", "");
+        setValue("confirmNewPassword", "");
+
+        setUpdateSuccess(
+          formData.newPassword
+            ? "Profile and password updated successfully!"
+            : "Profile updated successfully!",
+        );
       }
     } catch (error) {
+      console.error("Profile Update Error:", error);
       alert("Failed to update profile.");
     } finally {
       setLoading(false);
@@ -99,6 +145,7 @@ const Profile = () => {
   const handleAddProject = () => {
     navigate("/add-advertisement");
   };
+
   const handleDeleteListing = async (id) => {
     try {
       await dispatch(deleteListingThunk(id)).unwrap();
@@ -137,6 +184,8 @@ const Profile = () => {
               errors={errors}
               loading={loading}
               updateSuccess={updateSuccess}
+              reset={handleResetForm}
+              watch={watch}
             />
 
             {/* Pass userListings to MyProjects */}
@@ -144,7 +193,7 @@ const Profile = () => {
               projects={userListings}
               loading={listingsLoading}
               onAddProject={handleAddProject}
-              onDeleteProject={handleDeleteListing} // 👈
+              onDeleteProject={handleDeleteListing}
             />
           </div>
         </div>
