@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
 import { fetchListings } from "../Feature/listingSlice";
 import SearchBar from "../Component/Search/SearchBar";
 import FilterSidebar from "../Component/Search/FilterSidebar";
@@ -16,6 +17,7 @@ const initialFilterState = {
 };
 
 const SearchPage = () => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const { items: allListings, loading } = useSelector((state) => state.listings);
 
@@ -27,24 +29,19 @@ const SearchPage = () => {
     dispatch(fetchListings());
   }, [dispatch]);
 
-  // Apply Filters Handler
   const handleApplyFilters = () => {
     setAppliedFilters(filters);
   };
 
-  // Reset Filters Handler
   const handleResetFilters = () => {
     setFilters(initialFilterState);
     setAppliedFilters(initialFilterState);
     setSearchQuery("");
   };
 
-  // Filter & Search Logic (শুধুমাত্র অ্যাডমিন অ্যাপ্রুভড 'available' বিজ্ঞাপন দেখাবে)
   const filteredProducts = allListings.filter((item) => {
-    // 1. Admin Approval Check: শুধুমাত্র 'available' স্ট্যাটাসের বিজ্ঞাপন দেখাবে
     if (item.status?.toLowerCase() !== "available") return false;
 
-    // 2. Search Text Match
     if (searchQuery.trim() !== "") {
       const q = searchQuery.toLowerCase();
       const matchTitle = item.title?.toLowerCase().includes(q);
@@ -53,7 +50,6 @@ const SearchPage = () => {
       if (!matchTitle && !matchDesc && !matchCat) return false;
     }
 
-    // 3. Category Filter
     if (
       appliedFilters.category !== "All" &&
       item.category?.toLowerCase() !== appliedFilters.category.toLowerCase()
@@ -61,7 +57,6 @@ const SearchPage = () => {
       return false;
     }
 
-    // 4. Brand Filter
     if (
       appliedFilters.brand.trim() !== "" &&
       !item.brand?.toLowerCase().includes(appliedFilters.brand.toLowerCase())
@@ -69,7 +64,6 @@ const SearchPage = () => {
       return false;
     }
 
-    // 5. Price Range Filter
     const price = Number(item.pricePerUnit) || 0;
     if (appliedFilters.minPrice !== "" && price < Number(appliedFilters.minPrice)) {
       return false;
@@ -78,7 +72,6 @@ const SearchPage = () => {
       return false;
     }
 
-    // 6. Condition Filter
     if (
       appliedFilters.condition !== "Any" &&
       item.condition?.toLowerCase() !== appliedFilters.condition.toLowerCase()
@@ -86,7 +79,6 @@ const SearchPage = () => {
       return false;
     }
 
-    // 7. Location Filter
     if (
       appliedFilters.location.trim() !== "" &&
       !item.location?.toLowerCase().includes(appliedFilters.location.toLowerCase())
@@ -94,7 +86,6 @@ const SearchPage = () => {
       return false;
     }
 
-    // 8. Needed By Date Filter (AvailableFrom <= NeededBy)
     if (appliedFilters.neededBy !== "" && item.availableFrom) {
       if (new Date(item.availableFrom) > new Date(appliedFilters.neededBy)) {
         return false;
@@ -109,7 +100,7 @@ const SearchPage = () => {
       <div className="max-w-7xl mx-auto">
         {/* Page Heading */}
         <h1 className="text-3xl font-bold text-gray-900 mb-6">
-          Search surplus materials
+          {t("searchPage.heading")}
         </h1>
 
         {/* Top Search Component */}
@@ -119,10 +110,10 @@ const SearchPage = () => {
           onSearch={handleApplyFilters}
         />
 
-        {/* Main Content Grid: Left Filter + Right Scrollable Product Chart */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          {/* Left Filter Component */}
-          <div className="lg:col-span-3">
+        {/* Main Content: Left Filter Button + Full Remaining Width for Advertisements */}
+        <div className=" gap-5 items-start mt-4">
+          {/* Left Side Filter Trigger Button */}
+          <div className="shrink-0">
             <FilterSidebar
               filters={filters}
               setFilters={setFilters}
@@ -131,8 +122,8 @@ const SearchPage = () => {
             />
           </div>
 
-          {/* Right Product Chart Grid + Scroll + Pagination */}
-          <div className="lg:col-span-9">
+          {/* Right Product Chart Grid (Takes all remaining width) */}
+          <div className="flex-1 w-full min-w-0">
             <ProductGridSection
               products={filteredProducts}
               loading={loading}

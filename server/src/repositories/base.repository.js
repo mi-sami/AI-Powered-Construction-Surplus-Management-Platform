@@ -43,4 +43,6 @@ const deleteById = async (target, id) => {
   return await Model.findOneAndDelete({ id: String(id) }).lean();
 };
 
+
 module.exports = { getAll, create, updateById, deleteById };
+

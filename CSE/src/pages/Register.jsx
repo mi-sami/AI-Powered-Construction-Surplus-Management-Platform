@@ -8,7 +8,7 @@ import registerSideImg from "../assets/pexels-mart-production-7709283.jpg";
 import Logo from "../assets/surplusx_logo_transparent.png";
 
 const Register = () => {
-  const [accountType, setAccountType] = useState("Company"); // 'Company' or 'Individual'
+  const [accountType, setAccountType] = useState("Company");
   const [loading, setLoading] = useState(false);
   const [serverError, setServerError] = useState("");
   const [docImage, setDocImage] = useState("");
@@ -23,17 +23,18 @@ const Register = () => {
     handleSubmit,
     watch,
     reset,
+    clearErrors,
     formState: { errors },
-  } = useForm();
+  } = useForm({
+    mode: "onChange",
+  });
 
   const password = watch("password");
   const emailValue = watch("email");
   const enteredNidNo = watch("nidNo");
   const enteredLicenseNo = watch("tradeLicenseNo");
 
-  // ডকুমেন্টের টেক্সট বিশ্লেষণ করে NID বা Trade License কি না তা যাচাই
   const verifyDocumentContent = async (imageDataUrl, type) => {
-    // ইংরেজি ও বাংলা উভয় টেক্সট রিড করার জন্য 'eng+ben'
     const {
       data: { text },
     } = await Tesseract.recognize(imageDataUrl, "eng+ben");
@@ -42,7 +43,6 @@ const Register = () => {
     const digitsOnlyText = text.replace(/\D/g, "");
 
     if (type === "Individual") {
-      // বাংলাদেশি NID কার্ডের কমন কীওয়ার্ড
       const nidKeywords = [
         "national id",
         "nid",
@@ -60,12 +60,10 @@ const Register = () => {
       const hasNidKeyword = nidKeywords.some((kw) =>
         normalizedText.includes(kw),
       );
-      // ১০, ১৩ অথবা ১৭ ডিজিটের NID নম্বর আছে কি না
       const hasNidNumberPattern = /\b\d{10}\b|\b\d{13}\b|\b\d{17}\b/.test(
         digitsOnlyText,
       );
 
-      // ইউজার যদি ফর্মে NID নম্বর লিখে থাকে, তা ছবির নম্বরের সাথে মিলছে কি না চেক
       const cleanEnteredNid = (enteredNidNo || "").replace(/\D/g, "");
       const matchesEnteredNid =
         cleanEnteredNid.length >= 10
@@ -90,7 +88,6 @@ const Register = () => {
 
       return { valid: true };
     } else {
-      // Trade License-এর কমন কীওয়ার্ড
       const licenseKeywords = [
         "trade license",
         "trade licence",
@@ -143,7 +140,6 @@ const Register = () => {
     }
   };
 
-  // ইমেজ আপলোড, সাইজ চেক ও OCR ভেরিফিকেশন
   const handleImageUpload = (e) => {
     setDocError("");
     setIsDocVerified(false);
@@ -196,17 +192,16 @@ const Register = () => {
     reader.readAsDataURL(file);
   };
 
-  // Account Type পরিবর্তন করলে ফর্ম ও ছবি রিসেট
   const handleAccountTypeChange = (type) => {
     setAccountType(type);
     setDocImage("");
     setDocError("");
     setIsDocVerified(false);
     setIsVerifyingDoc(false);
+    clearErrors();
     reset();
   };
 
-  // Form Submission
   const onSubmit = async (data) => {
     if (isVerifyingDoc) {
       setDocError("Please wait while we verify your document...");
@@ -278,7 +273,7 @@ const Register = () => {
     } catch (error) {
       console.error("Registration Error:", error);
       setServerError(
-        "Failed to connect to server. Ensure json-server is running.",
+        "Failed to connect to server. Ensure backend server is running.",
       );
     } finally {
       setLoading(false);
@@ -288,9 +283,15 @@ const Register = () => {
   const isEmailValid =
     emailValue && /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(emailValue);
 
+  const nameFieldKey = accountType === "Company" ? "companyName" : "fullName";
+  const docNoFieldKey =
+    accountType === "Company" ? "tradeLicenseNo" : "nidNo";
+  const addressFieldKey =
+    accountType === "Company" ? "companyAddress" : "address";
+
   return (
     <div className="min-h-screen w-full relative flex items-center justify-center p-4 sm:p-8 bg-[#161922] overflow-x-hidden font-sans">
-      {/* Split Background (Dark Top + Indigo/Slate Bottom) */}
+      {/* Split Background */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="h-[58%] bg-[#161922] relative overflow-hidden">
           <div className="hidden md:block absolute -top-24 left-1/3 w-[520px] h-[520px] bg-[#1e222e] rotate-45 opacity-80"></div>
@@ -298,9 +299,8 @@ const Register = () => {
         <div className="h-[42%] bg-gradient-to-r from-[#4b5cc4] to-[#5a67d8]"></div>
       </div>
 
-      {/* Main Wrapper with Vertical "REGISTER" Label on the Left */}
+      {/* Main Wrapper */}
       <div className="relative z-10 flex items-center max-w-5xl w-full my-6">
-        {/* Vertical REGISTER Text Outside Card */}
         <div className="hidden lg:flex flex-col items-center justify-center mr-6 select-none">
           <span
             className="text-xs font-extrabold tracking-[0.55em] text-white/90 uppercase"
@@ -310,15 +310,12 @@ const Register = () => {
           </span>
         </div>
 
-        {/* Layered White Card Effect */}
         <div className="relative w-full">
-          {/* Subtle Stacked Shadow Cards at Bottom */}
           <div className="hidden sm:block absolute -bottom-2.5 inset-x-4 h-6 bg-white/80 rounded-sm shadow"></div>
           <div className="hidden sm:block absolute -bottom-5 inset-x-8 h-6 bg-white/50 rounded-sm shadow"></div>
 
-          {/* Primary White Card */}
           <div className="relative bg-white rounded-sm shadow-2xl p-5 sm:p-8 md:p-12 grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-10 items-stretch">
-            {/* Mobile & Tablet Header */}
+            {/* Mobile Header */}
             <div className="md:hidden flex flex-col items-center justify-center bg-white py-3 px-4">
               <div className="w-24 h-24 rounded-full bg-gradient-to-br from-[#4f5bd5] via-[#5b50d6] to-[#7c3aed] flex items-center justify-center shadow-lg shadow-[#4f5bd5]/30">
                 <UserRound className="w-12 h-12 text-white" strokeWidth={2} />
@@ -328,7 +325,7 @@ const Register = () => {
               </p>
             </div>
 
-            {/* Desktop Left Side Image Card */}
+            {/* Desktop Left Side Image */}
             <div className="hidden md:block md:col-span-5 relative rounded-sm overflow-hidden min-h-[580px] shadow-md group">
               <img
                 src={registerSideImg}
@@ -349,10 +346,9 @@ const Register = () => {
               </div>
             </div>
 
-            {/* Right Side Form Content */}
+            {/* Right Side Form */}
             <div className="md:col-span-7 flex flex-col justify-between">
               <div>
-                {/* Header: Register_ + Account Type Switch */}
                 <div className="flex flex-wrap items-center justify-between gap-4 mb-7">
                   <div>
                     <h1 className="text-3xl sm:text-4xl font-extrabold text-gray-900 tracking-tight">
@@ -361,7 +357,6 @@ const Register = () => {
                     <div className="w-12 h-[3px] bg-[#4f5bd5] mt-2"></div>
                   </div>
 
-                  {/* Compact Account Type Toggle */}
                   <div className="inline-flex rounded-full bg-gray-100 p-1 border border-gray-200">
                     <button
                       type="button"
@@ -388,14 +383,12 @@ const Register = () => {
                   </div>
                 </div>
 
-                {/* Server Error */}
                 {serverError && (
                   <div className="mb-4 p-2.5 bg-red-50 border-l-2 border-red-500 text-red-600 text-xs">
                     {serverError}
                   </div>
                 )}
 
-                {/* Underline Style Form */}
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
                   {/* Company Name / Full Name */}
                   <div>
@@ -405,38 +398,26 @@ const Register = () => {
                     </label>
                     <div className="relative flex items-center border-b border-gray-300 focus-within:border-[#4f5bd5] pb-1.5">
                       <input
+                        key={nameFieldKey}
                         type="text"
                         placeholder={
                           accountType === "Company"
                             ? "Enter company name"
                             : "Enter your full name"
                         }
-                        {...register(
-                          accountType === "Company"
-                            ? "companyName"
-                            : "fullName",
-                          {
-                            required: `${
-                              accountType === "Company"
-                                ? "Company name"
-                                : "Full name"
-                            } is required`,
-                          },
-                        )}
+                        {...register(nameFieldKey, {
+                          required: `${
+                            accountType === "Company"
+                              ? "Company name"
+                              : "Full name"
+                          } is required`,
+                        })}
                         className="w-full bg-transparent text-sm text-gray-800 placeholder-gray-500 focus:outline-none"
                       />
                     </div>
-                    {errors[
-                      accountType === "Company" ? "companyName" : "fullName"
-                    ] && (
+                    {errors[nameFieldKey] && (
                       <span className="text-red-500 text-[11px] mt-1 block">
-                        {
-                          errors[
-                            accountType === "Company"
-                              ? "companyName"
-                              : "fullName"
-                          ].message
-                        }
+                        {errors[nameFieldKey].message}
                       </span>
                     )}
                   </div>
@@ -472,7 +453,7 @@ const Register = () => {
                     )}
                   </div>
 
-                  {/* Password & Confirm Password Row */}
+                  {/* Password & Confirm Password */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                     <div>
                       <label className="block text-[10px] font-bold tracking-widest text-gray-900 uppercase mb-1">
@@ -523,7 +504,7 @@ const Register = () => {
                     </div>
                   </div>
 
-                  {/* Phone & Trade License / NID No Row */}
+                  {/* Phone & Trade License / NID No */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                     <div>
                       <label className="block text-[10px] font-bold tracking-widest text-gray-900 uppercase mb-1">
@@ -531,7 +512,8 @@ const Register = () => {
                       </label>
                       <div className="relative flex items-center border-b border-gray-300 focus-within:border-[#4f5bd5] pb-1.5">
                         <input
-                          type="text"
+                          key={`phone-${accountType}`}
+                          type="tel"
                           placeholder="017XXXXXXXX"
                           {...register("phone", {
                             required: "WhatsApp number is required",
@@ -553,38 +535,26 @@ const Register = () => {
                       </label>
                       <div className="relative flex items-center border-b border-gray-300 focus-within:border-[#4f5bd5] pb-1.5">
                         <input
+                          key={docNoFieldKey}
                           type="text"
                           placeholder={
                             accountType === "Company"
                               ? "TL-XXXXXX"
                               : "NID Number"
                           }
-                          {...register(
-                            accountType === "Company"
-                              ? "tradeLicenseNo"
-                              : "nidNo",
-                            {
-                              required: `${
-                                accountType === "Company"
-                                  ? "Trade license no."
-                                  : "NID no."
-                              } is required`,
-                            },
-                          )}
+                          {...register(docNoFieldKey, {
+                            required: `${
+                              accountType === "Company"
+                                ? "Trade license no."
+                                : "NID no."
+                            } is required`,
+                          })}
                           className="w-full bg-transparent text-sm text-gray-800 placeholder-gray-500 focus:outline-none"
                         />
                       </div>
-                      {errors[
-                        accountType === "Company" ? "tradeLicenseNo" : "nidNo"
-                      ] && (
+                      {errors[docNoFieldKey] && (
                         <span className="text-red-500 text-[11px] mt-1 block">
-                          {
-                            errors[
-                              accountType === "Company"
-                                ? "tradeLicenseNo"
-                                : "nidNo"
-                            ].message
-                          }
+                          {errors[docNoFieldKey].message}
                         </span>
                       )}
                     </div>
@@ -597,39 +567,27 @@ const Register = () => {
                     </label>
                     <div className="relative flex items-center border-b border-gray-300 focus-within:border-[#4f5bd5] pb-1.5">
                       <input
+                        key={addressFieldKey}
                         type="text"
                         placeholder={
                           accountType === "Company"
                             ? "Office / Company address"
                             : "Present address"
                         }
-                        {...register(
-                          accountType === "Company"
-                            ? "companyAddress"
-                            : "address",
-                          {
-                            required: "Address is required",
-                          },
-                        )}
+                        {...register(addressFieldKey, {
+                          required: "Address is required",
+                        })}
                         className="w-full bg-transparent text-sm text-gray-800 placeholder-gray-500 focus:outline-none"
                       />
                     </div>
-                    {errors[
-                      accountType === "Company" ? "companyAddress" : "address"
-                    ] && (
+                    {errors[addressFieldKey] && (
                       <span className="text-red-500 text-[11px] mt-1 block">
-                        {
-                          errors[
-                            accountType === "Company"
-                              ? "companyAddress"
-                              : "address"
-                          ].message
-                        }
+                        {errors[addressFieldKey].message}
                       </span>
                     )}
                   </div>
 
-                  {/* Trade License Image vs NID Card Image Upload with OCR Verification */}
+                  {/* Document Image Upload */}
                   <div>
                     <div className="flex items-center justify-between mb-1.5">
                       <label className="text-[10px] font-bold tracking-widest text-gray-900 uppercase">
@@ -669,7 +627,6 @@ const Register = () => {
                       )}
                     </div>
 
-                    {/* Verification Status Messages */}
                     {isVerifyingDoc && (
                       <div className="flex items-center gap-1.5 text-[#4f5bd5] text-[11px] font-medium mt-1.5">
                         <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -704,7 +661,7 @@ const Register = () => {
                     )}
                   </div>
 
-                  {/* Terms & Conditions Checkbox */}
+                  {/* Terms & Conditions */}
                   <div className="flex items-start space-x-2.5 pt-1">
                     <input
                       id="termsCheck"
@@ -731,7 +688,7 @@ const Register = () => {
                     </label>
                   </div>
 
-                  {/* Bottom Bar: Sign In Link + Pill Submit Button */}
+                  {/* Submit Button */}
                   <div className="pt-3 flex flex-wrap items-center justify-between gap-4">
                     <p className="text-xs text-gray-400">
                       Already have an account ?{" "}

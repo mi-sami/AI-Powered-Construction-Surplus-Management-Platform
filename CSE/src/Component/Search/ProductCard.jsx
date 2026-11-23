@@ -1,8 +1,18 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 const ProductCard = ({ item }) => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
+
+  const translatedUnit = item.unit
+    ? t(`materialForm.units.${item.unit}`, { defaultValue: item.unit })
+    : "";
+
+  const translatedCondition = item.condition
+    ? t(`searchPage.conditions.${item.condition}`, { defaultValue: item.condition })
+    : t("searchPage.conditions.Unused");
 
   return (
     <div
@@ -24,7 +34,9 @@ const ProductCard = ({ item }) => {
               className="w-full h-full object-cover"
             />
           ) : (
-            <span className="text-xs text-gray-500 font-medium">Photo</span>
+            <span className="text-xs text-gray-500 font-medium">
+              {t("searchPage.photo")}
+            </span>
           )}
         </div>
 
@@ -35,22 +47,22 @@ const ProductCard = ({ item }) => {
 
         {/* Quantity & Price */}
         <p className="text-xs font-medium text-gray-800 mb-0.5">
-          {item.quantity} {item.unit} • ৳{item.pricePerUnit}/{item.unit}
+          {item.quantity} {translatedUnit} • ৳{item.pricePerUnit}/{translatedUnit}
         </p>
 
         {/* Location */}
         <p className="text-[11px] text-gray-500 mb-3">
-          {item.location || "Location not specified"}
+          {item.location || t("searchPage.locationNotSpecified")}
         </p>
       </div>
 
       {/* Bottom Badges */}
       <div className="flex flex-wrap items-center gap-1.5 pt-1">
         <span className="px-2.5 py-0.5 text-[10px] font-semibold rounded-full border border-gray-300 text-gray-700 bg-gray-50">
-          {item.condition || "Unused"}
+          {translatedCondition}
         </span>
         <span className="px-2.5 py-0.5 text-[10px] font-semibold rounded-full border border-emerald-600 text-emerald-700 bg-emerald-50/60">
-          Verified seller
+          {t("searchPage.verifiedSeller")}
         </span>
       </div>
     </div>

@@ -1,20 +1,23 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 const SellerWhatsAppCard = ({ product }) => {
-  const sellerName = product?.sellerName || "Verified Seller";
+  const { t } = useTranslation();
+  const sellerName =
+    product?.sellerName || t("productDetails.info.defaultSeller");
   const rawPhone =
     product?.sellerPhone || product?.whatsappPhone || product?.phone || "";
-  const replyTime = product?.replyTime || "1 hour";
+  const replyTime =
+    product?.replyTime || t("productDetails.whatsapp.defaultReplyTime");
 
-  // আসল নম্বর ক্লিন করে আন্তর্জাতিক WhatsApp ফরম্যাটে (8801XXXXXXXXX) রূপান্তর
   const getFullWhatsAppNumber = (phone) => {
     if (!phone) return "";
-    let digits = phone.toString().replace(/\D/g, ""); // সব '+', স্পেস, হাইফেন বাদ
+    let digits = phone.toString().replace(/\D/g, "");
 
     if (digits.startsWith("01") && digits.length === 11) {
-      digits = "88" + digits; // 01712345678 -> 8801712345678
+      digits = "88" + digits;
     } else if (digits.startsWith("1") && digits.length === 10) {
-      digits = "880" + digits; // 1712345678 -> 8801712345678
+      digits = "880" + digits;
     }
     return digits;
   };
@@ -24,7 +27,7 @@ const SellerWhatsAppCard = ({ product }) => {
 
   const handleOpenWhatsApp = () => {
     if (!whatsappUrl) {
-      alert("Seller WhatsApp number is not available for this account.");
+      alert(t("productDetails.whatsapp.noNumber"));
       return;
     }
     window.open(whatsappUrl, "_blank", "noopener,noreferrer");
@@ -34,7 +37,9 @@ const SellerWhatsAppCard = ({ product }) => {
     <div className="bg-white rounded-xl border border-gray-200/90 p-6 shadow-sm">
       {/* Header Row */}
       <div className="flex items-center gap-2.5 mb-4">
-        <h3 className="text-lg font-bold text-gray-900">Talk to the seller</h3>
+        <h3 className="text-lg font-bold text-gray-900">
+          {t("productDetails.whatsapp.heading")}
+        </h3>
         <span className="px-2.5 py-0.5 text-xs font-semibold text-[#15803d] bg-[#f0fdf4] border border-[#16a34a] rounded-full">
           WhatsApp
         </span>
@@ -51,7 +56,10 @@ const SellerWhatsAppCard = ({ product }) => {
             +880 1XXX-XXXXXX
           </p>
           <p className="text-xs text-gray-500 mt-0.5 truncate">
-            {sellerName} · usually replies within {replyTime}
+            {t("productDetails.whatsapp.replyNote", {
+              sellerName,
+              replyTime,
+            })}
           </p>
         </div>
       </div>
@@ -62,13 +70,12 @@ const SellerWhatsAppCard = ({ product }) => {
         onClick={handleOpenWhatsApp}
         className="w-full py-3 bg-[#198744] hover:bg-[#146c36] text-gray-950 font-semibold text-sm rounded-lg transition-colors cursor-pointer"
       >
-        Chat on WhatsApp
+        {t("productDetails.whatsapp.chatButton")}
       </button>
 
       {/* Safety Footer Note */}
       <p className="text-xs text-gray-500 leading-relaxed mt-4">
-        Ask about delivery, pickup time or the material before you pay. Pay only
-        through this page.
+        {t("productDetails.whatsapp.safetyNote")}
       </p>
     </div>
   );

@@ -1,18 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 import img1 from "../../../assets/07-May-24-Building-Materials.jpg";
 import img2 from "../../../assets/construction-materials-bricks-pipes-gravel-on-a-building-site-free-photo.jpeg";
 import img3 from "../../../assets/istockphoto-504749256-170667a.jpg";
 
 const HeroSection = () => {
-  // Initially 3rd image দেখাবে, এরপর প্রতি ৫ সেকেন্ড পরপর 2nd -> 1st -> 3rd এভাবে ঘুরবে
+  const { t } = useTranslation();
   const bgImages = [img3, img2, img1];
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isLoaded, setIsLoaded] = useState(false);
 
-  // পেজ ওপেন হওয়ার সাথে সাথে সাইড থেকে লেখার ট্রানজিশন ট্রিগার করা
   useEffect(() => {
     const entryTimer = setTimeout(() => {
       setIsLoaded(true);
@@ -20,11 +20,10 @@ const HeroSection = () => {
     return () => clearTimeout(entryTimer);
   }, []);
 
-  // প্রতি ৫ সেকেন্ড (5000ms) পরপর ব্যাকগ্রাউন্ড ইমেজ পরিবর্তন করা
   useEffect(() => {
     const slideInterval = setInterval(() => {
       setCurrentIndex((prevIndex) => (prevIndex + 1) % bgImages.length);
-    },5000);
+    }, 5000);
 
     return () => clearInterval(slideInterval);
   }, [bgImages.length]);
@@ -58,25 +57,24 @@ const HeroSection = () => {
         }`}
       >
         <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold leading-tight drop-shadow-md">
-          Give leftover construction material a second life.
+          {t("homePage.hero.title")}
         </h1>
 
         <p className="text-gray-200 text-sm sm:text-base md:text-lg leading-relaxed max-w-2xl mx-auto">
-          Have leftover building materials? Sell them here. Need materials? Find
-          them here, often for less than new.
+          {t("homePage.hero.subtitle")}
         </p>
 
         {/* Centered Action Buttons */}
         <div className="flex flex-wrap items-center justify-center gap-4 pt-3">
           <Link to="/register">
             <button className="px-9 py-3 bg-[#4f5bd5] hover:bg-[#3f4bc2] text-white text-xs font-bold tracking-widest uppercase rounded-full shadow-lg shadow-[#4f5bd5]/30 transition-all cursor-pointer disabled:opacity-50">
-              Register
+              {t("homePage.hero.register")}
             </button>
           </Link>
 
           <Link to="/login">
-            <button className="px-9 py-3 text-sm font-medium text-gray-900 bg-white rounded hover:bg-gray-200 transition-all cursor-pointer rounded-full">
-              Login
+            <button className="px-9 py-3 text-sm font-medium text-gray-900 bg-white hover:bg-gray-200 transition-all cursor-pointer rounded-full">
+              {t("homePage.hero.login")}
             </button>
           </Link>
         </div>
