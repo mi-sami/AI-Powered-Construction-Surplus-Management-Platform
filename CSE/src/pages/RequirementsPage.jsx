@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
 import { fetchListings } from "../Feature/listingSlice";
 import RequirementForm from "../Component/Requirements/RequirementForm";
 import MatchCard from "../Component/Requirements/MatchCard";
@@ -15,6 +16,7 @@ const initialRequirements = {
 };
 
 const RequirementsPage = () => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const { items: allListings, loading } = useSelector((state) => state.listings);
 
@@ -29,13 +31,11 @@ const RequirementsPage = () => {
     setAppliedReq({ ...requirements });
   };
 
-  // Strict Product Type ফিল্টার + ৬টি ক্রাইটেরিয়া অনুযায়ী Integer Percentage ক্যালকুলেশন
+  // Strict Product Type ফিল্টার + ৬টি ক্রাইটেরিয়া অনুযায়ী Integer Percentage ক্যালকুলেশন
   const rankedMatches = useMemo(() => {
     const filteredListings = allListings.filter((item) => {
-      // 1. শুধুমাত্র অ্যাডমিন অ্যাপ্রুভড ('available') প্রোডাক্ট নেওয়া হবে
       if (item.status?.toLowerCase() !== "available") return false;
 
-      // 2. Strict Product Type Filter: যে Product type সিলেক্ট করা হবে শুধু সেটাই দেখাবে
       if (
         appliedReq.productType &&
         item.category?.toLowerCase() !== appliedReq.productType.toLowerCase()
@@ -50,7 +50,7 @@ const RequirementsPage = () => {
       let matchedCriteriaCount = 0;
       const totalCriteria = 6;
 
-      // Criteria 1: Product Type (যেহেতু ফিল্টার হয়ে এসেছে, তাই এটি ম্যাচড)
+      // Criteria 1: Product Type
       const isProductTypeMatch =
         !appliedReq.productType ||
         item.category?.toLowerCase() === appliedReq.productType.toLowerCase();
@@ -92,7 +92,6 @@ const RequirementsPage = () => {
         item.location?.toLowerCase().includes(appliedReq.location.toLowerCase());
       if (isLocationMatch) matchedCriteriaCount += 1;
 
-      // Integer Percentage Calculation (6 তে 100%, কম হলে 100/6 করে কমে integer হবে)
       const unitPenalty = 100 / totalCriteria;
       const unmatchedCount = totalCriteria - matchedCriteriaCount;
       const matchPercentage =
@@ -115,9 +114,14 @@ const RequirementsPage = () => {
       };
     });
 
-    // সবচেয়ে বেশি ম্যাচ হওয়া প্রোডাক্ট সবার উপরে (Descending Order)
     return scoredList.sort((a, b) => b.matchPercentage - a.matchPercentage);
   }, [allListings, appliedReq]);
+
+  const translatedProductType = appliedReq.productType
+    ? t(`materialForm.categories.${appliedReq.productType}`, {
+        defaultValue: appliedReq.productType,
+      })
+    : "";
 
   return (
     <div className="min-h-screen bg-[#f7f6f2] font-sans text-gray-900 p-6 md:p-10">
@@ -125,10 +129,10 @@ const RequirementsPage = () => {
         {/* Page Header */}
         <div className="mb-6">
           <h1 className="text-3xl font-bold text-gray-900">
-            Post a requirement
+            {t("requirementsPage.title")}
           </h1>
           <p className="text-xs text-gray-500 mt-1">
-            Tell us what you need. We rank available surplus by how well it fits.
+            {t("requirementsPage.subtitle")}
           </p>
         </div>
 
@@ -147,12 +151,14 @@ const RequirementsPage = () => {
           {/* Right Column: Ranked Matches List */}
           <div className="lg:col-span-7">
             <h2 className="text-base font-bold text-gray-900 mb-4">
-              Matches {appliedReq.productType ? `for ${appliedReq.productType}` : ""}
+              {appliedReq.productType
+                ? t("requirementsPage.matchesFor", { type: translatedProductType })
+                : t("requirementsPage.matchesTitle")}
             </h2>
 
             {loading ? (
               <div className="bg-white rounded-lg border border-gray-200 p-10 text-center text-xs text-gray-500">
-                Finding best matches...
+                {t("requirementsPage.findingMatches")}
               </div>
             ) : rankedMatches.length > 0 ? (
               <div className="space-y-5 max-h-[750px] overflow-y-auto pr-1">
@@ -163,8 +169,10 @@ const RequirementsPage = () => {
             ) : (
               <div className="bg-white rounded-lg border border-gray-200 p-10 text-center text-xs text-gray-500">
                 {appliedReq.productType
-                  ? `No available surplus materials found for "${appliedReq.productType}".`
-                  : "No available surplus materials found right now."}
+                  ? t("requirementsPage.noMatchesForType", {
+                      type: translatedProductType,
+                    })
+                  : t("requirementsPage.noMatchesRightNow")}
               </div>
             )}
           </div>

@@ -2,12 +2,14 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import useAuthInfo from "../Hook/useAuthInfo";
 import MaterialPhotoUpload from "../Component/AddAdvertisement/MaterrialPhotoUpload.jsx";
 import ProductDetailsForm from "../Component/AddAdvertisement/ProductDetailsForm.jsx";
 import { addListingThunk } from "../Feature/listingSlice";
 
 const AddNewAdvertisement = () => {
+  const { t } = useTranslation();
   const { user } = useAuthInfo();
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -33,7 +35,7 @@ const AddNewAdvertisement = () => {
       ...data,
       sellerId: user?.id || "u1",
       sellerName: user?.name || "Verified Seller", // প্রোডাক্ট ডিটেইলস পেজে সেলারের নাম দেখানোর জন্য
-      sellerPhone: user?.whatsappPhone || user?.phone || "", // অ্যাকাউন্ট থেকে দেওয়া WhatsApp নম্বর
+      sellerPhone: user?.whatsappPhone || user?.phone || "", // অ্যাকাউন্ট থেকে দেওয়া WhatsApp নম্বর
       image: imageUrl || "https://via.placeholder.com/400x300?text=Material+Photo",
       currency: "BDT",
       status: "pending", // সরাসরি 'available' না হয়ে অ্যাডমিন অ্যাপ্রুভালের জন্য 'pending' থাকবে
@@ -43,18 +45,18 @@ const AddNewAdvertisement = () => {
 
     try {
       await dispatch(addListingThunk(newAdvertisement)).unwrap();
-      alert("Advertisement submitted! It is now under admin review and will go live once approved.");
+      alert(t("addAdPage.submitSuccess"));
       navigate("/profile"); // Navigate back to profile/my-advertisements
     } catch (error) {
       console.error("Failed to submit advertisement:", error);
-      alert("Failed to submit advertisement.");
+      alert(t("addAdPage.submitError"));
     } finally {
       setLoading(false);
     }
   };
 
   const handleSaveDraft = () => {
-    alert("Saved as draft!");
+    alert(t("addAdPage.draftSaved"));
   };
 
   return (
@@ -62,9 +64,11 @@ const AddNewAdvertisement = () => {
       <div className="max-w-6xl mx-auto">
         {/* Page Title */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Add new advertisement</h1>
+          <h1 className="text-3xl font-bold text-gray-900">
+            {t("addAdPage.title")}
+          </h1>
           <p className="text-gray-500 text-sm mt-1">
-            Upload a photo of the product. New advertisements require admin approval before going live.
+            {t("addAdPage.subtitle")}
           </p>
         </div>
 

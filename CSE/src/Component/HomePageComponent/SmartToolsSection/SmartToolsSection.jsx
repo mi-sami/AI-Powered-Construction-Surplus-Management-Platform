@@ -1,22 +1,23 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { HiOutlineSparkles } from "react-icons/hi";
 import { LuFlag } from "react-icons/lu";
 
 const SmartToolsSection = () => {
+  const { t } = useTranslation();
+
   const tools = [
     {
       icon: HiOutlineSparkles,
       gradient: "from-[#008ba9] to-cyan-500",
-      title: "AI buyer-material matching",
-      description:
-        "Your requirement is compared with available listings on type, quantity, brand, quality, condition, price, location and date.",
+      title: t("homePage.smartTools.matchingTitle"),
+      description: t("homePage.smartTools.matchingDesc"),
     },
     {
       icon: LuFlag,
       gradient: "from-[#c24e00] to-amber-500",
-      title: "Suspicious listing checks",
-      description:
-        "Reused photos, unusually low prices and other warning signs are flagged for an admin to review.",
+      title: t("homePage.smartTools.checksTitle"),
+      description: t("homePage.smartTools.checksDesc"),
     },
   ];
 
@@ -24,10 +25,10 @@ const SmartToolsSection = () => {
     <section className="py-12 px-6 bg-[#f7f6f2] w-full">
       <div className="max-w-7xl mx-auto">
         <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
-          Smart tools built in
+          {t("homePage.smartTools.heading")}
         </h2>
         <p className="text-gray-600 text-sm mb-8">
-          AI helps listing, matching and keeping the marketplace trustworthy.
+          {t("homePage.smartTools.subtitle")}
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -38,7 +39,7 @@ const SmartToolsSection = () => {
                 key={idx}
                 className="bg-white p-6 rounded-lg border border-gray-200/80 shadow-sm hover:shadow-md transition-shadow"
               >
-                {/* Gradient Icon Badge (Title-এর উপরে) */}
+                {/* Gradient Icon Badge */}
                 <div
                   className={`w-12 h-12 rounded-lg bg-gradient-to-br ${tool.gradient} flex items-center justify-center text-white mb-4 shadow-sm`}
                 >

@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import {
   buildDropdownOptions,
   getSpecificationsByType,
@@ -12,6 +13,7 @@ const RequirementForm = ({
   onFindMatches,
   listings = [],
 }) => {
+  const { t } = useTranslation();
   const { categories, brands, locations, units } =
     buildDropdownOptions(listings);
   const activeSpecifications = getSpecificationsByType(
@@ -38,17 +40,23 @@ const RequirementForm = ({
     onFindMatches();
   };
 
+  const translatedSelectedType = requirements.productType
+    ? t(`materialForm.categories.${requirements.productType}`, {
+        defaultValue: requirements.productType,
+      }).toLowerCase()
+    : "";
+
   return (
     <div className="bg-white rounded-lg border border-gray-200/80 p-6 shadow-sm">
       <h2 className="text-base font-bold text-gray-900 mb-5">
-        Your requirement
+        {t("requirementsPage.form.heading")}
       </h2>
 
       <form onSubmit={handleSubmit} className="space-y-4 text-xs">
         {/* 1. Product Type */}
         <div>
           <label className="block font-semibold text-gray-700 mb-1.5">
-            Product type
+            {t("requirementsPage.form.productType")}
           </label>
           <select
             name="productType"
@@ -56,10 +64,10 @@ const RequirementForm = ({
             onChange={handleChange}
             className="w-full px-3 py-2.5 bg-white border border-gray-300 rounded text-gray-800 focus:outline-none focus:ring-1 focus:ring-[#008ba9]"
           >
-            <option value="">Select product type</option>
+            <option value="">{t("requirementsPage.form.selectProductType")}</option>
             {categories.map((cat) => (
               <option key={cat} value={cat}>
-                {cat}
+                {t(`materialForm.categories.${cat}`, { defaultValue: cat })}
               </option>
             ))}
           </select>
@@ -68,7 +76,7 @@ const RequirementForm = ({
         {/* 2. Dynamic Specification */}
         <div>
           <label className="block font-semibold text-gray-700 mb-1.5">
-            Specification
+            {t("requirementsPage.form.specification")}
           </label>
           <select
             name="specification"
@@ -79,8 +87,10 @@ const RequirementForm = ({
           >
             <option value="">
               {requirements.productType
-                ? `Any ${requirements.productType.toLowerCase()} specification`
-                : "Select product type first"}
+                ? t("requirementsPage.form.anySpec", {
+                    type: translatedSelectedType,
+                  })
+                : t("requirementsPage.form.selectTypeFirst")}
             </option>
             {activeSpecifications.map((spec) => (
               <option key={spec.value} value={spec.value}>
@@ -94,7 +104,7 @@ const RequirementForm = ({
         <div className="grid grid-cols-3 gap-2.5">
           <div>
             <label className="block font-semibold text-gray-700 mb-1.5">
-              Quantity
+              {t("requirementsPage.form.quantity")}
             </label>
             <select
               name="quantity"
@@ -102,7 +112,7 @@ const RequirementForm = ({
               onChange={handleChange}
               className="w-full px-2.5 py-2.5 bg-white border border-gray-300 rounded text-gray-800 focus:outline-none focus:ring-1 focus:ring-[#008ba9]"
             >
-              <option value="">Any</option>
+              <option value="">{t("requirementsPage.form.any")}</option>
               {QUANTITY_OPTIONS.map((qty) => (
                 <option key={qty} value={qty}>
                   {qty}+
@@ -113,7 +123,7 @@ const RequirementForm = ({
 
           <div>
             <label className="block font-semibold text-gray-700 mb-1.5">
-              Unit
+              {t("requirementsPage.form.unit")}
             </label>
             <select
               name="unit"
@@ -121,10 +131,10 @@ const RequirementForm = ({
               onChange={handleChange}
               className="w-full px-2.5 py-2.5 bg-white border border-gray-300 rounded text-gray-800 focus:outline-none focus:ring-1 focus:ring-[#008ba9]"
             >
-              <option value="">Any</option>
+              <option value="">{t("requirementsPage.form.any")}</option>
               {units.map((u) => (
                 <option key={u} value={u}>
-                  {u}
+                  {t(`materialForm.units.${u}`, { defaultValue: u })}
                 </option>
               ))}
             </select>
@@ -132,7 +142,7 @@ const RequirementForm = ({
 
           <div>
             <label className="block font-semibold text-gray-700 mb-1.5">
-              Brand
+              {t("requirementsPage.form.brand")}
             </label>
             <select
               name="brand"
@@ -140,7 +150,7 @@ const RequirementForm = ({
               onChange={handleChange}
               className="w-full px-2.5 py-2.5 bg-white border border-gray-300 rounded text-gray-800 focus:outline-none focus:ring-1 focus:ring-[#008ba9]"
             >
-              <option value="">Optional</option>
+              <option value="">{t("requirementsPage.form.optional")}</option>
               {brands.map((b) => (
                 <option key={b} value={b}>
                   {b}
@@ -154,7 +164,7 @@ const RequirementForm = ({
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label className="block font-semibold text-gray-700 mb-1.5">
-              Max budget (৳)
+              {t("requirementsPage.form.maxBudget")}
             </label>
             <select
               name="maxBudget"
@@ -162,10 +172,10 @@ const RequirementForm = ({
               onChange={handleChange}
               className="w-full px-3 py-2.5 bg-white border border-gray-300 rounded text-gray-800 focus:outline-none focus:ring-1 focus:ring-[#008ba9]"
             >
-              <option value="">No limit</option>
+              <option value="">{t("requirementsPage.form.noLimit")}</option>
               {BUDGET_OPTIONS.map((budget) => (
                 <option key={budget} value={budget}>
-                  Up to ৳{budget} / unit
+                  {t("requirementsPage.form.upToBudget", { budget })}
                 </option>
               ))}
             </select>
@@ -173,7 +183,7 @@ const RequirementForm = ({
 
           <div>
             <label className="block font-semibold text-gray-700 mb-1.5">
-              Location
+              {t("requirementsPage.form.location")}
             </label>
             <select
               name="location"
@@ -181,7 +191,7 @@ const RequirementForm = ({
               onChange={handleChange}
               className="w-full px-3 py-2.5 bg-white border border-gray-300 rounded text-gray-800 focus:outline-none focus:ring-1 focus:ring-[#008ba9]"
             >
-              <option value="">Any location</option>
+              <option value="">{t("requirementsPage.form.anyLocation")}</option>
               {locations.map((loc) => (
                 <option key={loc} value={loc}>
                   {loc}
@@ -197,7 +207,7 @@ const RequirementForm = ({
             type="submit"
             className="px-6 py-2.5 text-xs font-bold tracking-wider rounded-full bg-[#4f5bd5] hover:bg-[#3f4bc2] text-white shadow-md shadow-[#4f5bd5]/25 transition-all cursor-pointer disabled:opacity-50"
           >
-            Find matches
+            {t("requirementsPage.form.findMatches")}
           </button>
         </div>
       </form>

@@ -1,14 +1,21 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import axios from "axios";
+import { useSelector, useDispatch } from "react-redux";
+import { useTranslation } from "react-i18next";
 import useAuthInfo from "../Hook/useAuthInfo";
+import { fetchListings } from "../Feature/listingSlice";
+import { handleApiAction } from "../Utils/ApiHandler";
 import PaymentSummaryCard from "../Component/AdvancePayment/PaymentSummaryCard";
 import PaymentMethodSelector from "../Component/AdvancePayment/PaymentMethodSelector";
 
 const AdvancePaymentPage = () => {
+  const { t } = useTranslation();
   const { id } = useParams();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const { user } = useAuthInfo();
+
+  const { items: reduxListings } = useSelector((state) => state.listings);
 
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -16,10 +23,37 @@ const AdvancePaymentPage = () => {
   const [paying, setPaying] = useState(false);
 
   useEffect(() => {
-    const fetchPaymentContext = async () => {
+    const loadListing = async () => {
+      // ১. প্রথমে Redux স্টোর থেকে প্রোডাক্ট খোঁজা
+      if (reduxListings.length > 0) {
+        const foundInRedux = reduxListings.find(
+          (item) =>
+            String(item.id) === String(id) || String(item._id) === String(id)
+        );
+        if (foundInRedux) {
+          setProduct(foundInRedux);
+          setLoading(false);
+          return;
+        }
+      }
+
+      // ২. Redux-এ না থাকলে handleApiAction দিয়ে লিস্টিং আনা
       try {
-        const prodRes = await axios.get(`http://localhost:5000/listings/${id}`);
-        setProduct(prodRes.data);
+        const allListings = await handleApiAction({
+          action: "GET",
+          target: "listings",
+        });
+
+        if (Array.isArray(allListings)) {
+          const matched = allListings.find(
+            (item) =>
+              String(item.id) === String(id) || String(item._id) === String(id)
+          );
+          if (matched) {
+            setProduct(matched);
+          }
+        }
+        dispatch(fetchListings());
       } catch (error) {
         console.error("Error loading advance payment page:", error);
       } finally {
@@ -27,13 +61,13 @@ const AdvancePaymentPage = () => {
       }
     };
 
-    fetchPaymentContext();
-  }, [id]);
+    loadListing();
+  }, [id, reduxListings, dispatch]);
 
   if (loading) {
     return (
       <div className="min-h-screen bg-[#f7f6f2] p-12 text-center text-sm text-gray-500">
-        Loading payment details...
+        {t("advancePayment.loading")}
       </div>
     );
   }
@@ -41,17 +75,21 @@ const AdvancePaymentPage = () => {
   if (!product) {
     return (
       <div className="min-h-screen bg-[#f7f6f2] p-12 text-center">
-        <p className="text-sm text-gray-600 mb-4">Listing not found.</p>
+        <p className="text-sm text-gray-600 mb-4">
+          {t("advancePayment.notFound")}
+        </p>
         <button
           type="button"
           onClick={() => navigate("/search")}
           className="px-4 py-2 bg-[#008ba9] text-white text-xs font-semibold rounded cursor-pointer"
         >
-          ← Back to Search
+          {t("advancePayment.backToSearch")}
         </button>
       </div>
     );
   }
+
+  const productId = product.id || product._id;
 
   // মূল্য হিসাব
   const totalAmount =
@@ -82,7 +120,7 @@ const AdvancePaymentPage = () => {
         receiptNo,
         transactionId,
         dateTime: formattedDateTime,
-        listingId: product.id,
+        listingId: productId,
         listingTitle: product.title,
         quantity: Number(product.quantity || 1),
         unit: product.unit || "unit",
@@ -95,32 +133,45 @@ const AdvancePaymentPage = () => {
         advancePaid: currentAdvance,
         dueBalance,
         paymentMethod: selectedMethod,
+        orderStatus: "confirmed",
         status: "confirmed",
         createdAt: now.toISOString().split("T")[0],
       };
 
       // ১. অর্ডার সেভ করা
-      await axios.post("http://localhost:5000/orders", newOrder);
+      await handleApiAction({
+        action: "ADD",
+        target: "orders",
+        payload: newOrder,
+      });
 
       // ২. সেলারের কাছে Order Confirm ও Receipt-এর নোটিফিকেশন পাঠানো
-      await axios.post("http://localhost:5000/notifications", {
-        id: `notif_${Date.now()}`,
-        userId: product.sellerId,
-        type: "ORDER_CONFIRMED",
-        orderId: orderId,
-        receiptNo: receiptNo,
-        listingId: product.id,
-        title: "New Order Confirmed & Receipt Ready",
-        message: `${user?.name || "A buyer"} confirmed an order for "${product.title}" and paid ৳${currentAdvance.toLocaleString()} advance. Click to view payment receipt.`,
-        isRead: false,
-        createdAt: now.toISOString(),
+      await handleApiAction({
+        action: "ADD",
+        target: "notifications",
+        payload: {
+          id: `notif_${Date.now()}`,
+          userId: product.sellerId,
+          type: "ORDER_CONFIRMED",
+          orderId: orderId,
+          receiptNo: receiptNo,
+          listingId: productId,
+          title: t("advancePayment.notifTitle"),
+          message: t("advancePayment.notifMessage", {
+            buyerName: user?.name || "A buyer",
+            title: product.title,
+            amount: currentAdvance.toLocaleString(),
+          }),
+          isRead: false,
+          createdAt: now.toISOString(),
+        },
       });
 
       // ৩. বায়ারকে সরাসরি Payment Receipt পেজে নিয়ে যাওয়া
       navigate(`/receipt/${orderId}`);
     } catch (error) {
       console.error("Order confirmation error:", error);
-      alert("Failed to confirm order.");
+      alert(t("advancePayment.orderFailed"));
     } finally {
       setPaying(false);
     }
@@ -131,17 +182,16 @@ const AdvancePaymentPage = () => {
       <div className="w-full max-w-md bg-white rounded-xl border border-gray-200/90 p-6 sm:p-7 shadow-sm">
         <button
           type="button"
-          onClick={() => navigate(`/product/${product.id}`)}
+          onClick={() => navigate(`/product/${productId}`)}
           className="text-xs font-semibold text-[#008ba9] hover:underline mb-4 inline-block cursor-pointer"
         >
-          ← Back to Product Details
+          {t("advancePayment.backToDetails")}
         </button>
 
         <h1 className="text-xl font-bold text-gray-900 mb-5">
-          Advance payment
+          {t("advancePayment.title")}
         </h1>
 
-        {/* Pricing Summary */}
         <PaymentSummaryCard
           totalAmount={totalAmount}
           currentAdvance={currentAdvance}
@@ -156,6 +206,9 @@ const AdvancePaymentPage = () => {
           onConfirmOrder={handleConfirmOrder}
           paying={paying}
         />
+
+        {/* Pricing Summary */}
+        
       </div>
     </div>
   );

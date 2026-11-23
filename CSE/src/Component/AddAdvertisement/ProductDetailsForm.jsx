@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 const ProductDetailsForm = ({
   register,
@@ -7,10 +8,14 @@ const ProductDetailsForm = ({
   onSaveDraft,
   isEditMode = false,
 }) => {
+  const { t } = useTranslation();
+
   return (
     <div className="bg-white rounded-lg border border-gray-200/80 p-6 sm:p-8 shadow-sm">
       <h3 className="text-base font-bold text-gray-900 mb-5">
-        {isEditMode ? "Product details" : "2. Product details"}
+        {isEditMode
+          ? t("materialForm.detailsTitleEdit")
+          : t("materialForm.detailsTitleCreate")}
       </h3>
 
       <div className="space-y-4">
@@ -18,14 +23,14 @@ const ProductDetailsForm = ({
         {isEditMode && (
           <div>
             <label className="block text-xs font-semibold text-gray-700 mb-1.5">
-              Status
+              {t("materialForm.status")}
             </label>
             <select
               {...register("status")}
               className="w-full px-3.5 py-2 bg-white border border-gray-300 rounded text-sm text-gray-900 focus:outline-none focus:ring-1 focus:ring-[#008ba9]"
             >
-              <option value="available">Available</option>
-              <option value="reserved">Reserved</option>
+              <option value="available">{t("materialForm.available")}</option>
+              <option value="reserved">{t("materialForm.reserved")}</option>
             </select>
           </div>
         )}
@@ -33,12 +38,14 @@ const ProductDetailsForm = ({
         {/* Product Name */}
         <div>
           <label className="block text-xs font-semibold text-gray-700 mb-1.5">
-            Product name *
+            {t("materialForm.productName")}
           </label>
           <input
             type="text"
-            placeholder="Name of the product"
-            {...register("title", { required: "Product name is required" })}
+            placeholder={t("materialForm.productNamePlaceholder")}
+            {...register("title", {
+              required: t("materialForm.productNameRequired"),
+            })}
             className="w-full px-3.5 py-2 bg-white border border-gray-300 rounded text-sm text-gray-900 focus:outline-none focus:ring-1 focus:ring-[#008ba9]"
           />
           {errors?.title && (
@@ -51,19 +58,21 @@ const ProductDetailsForm = ({
         {/* Product Type */}
         <div>
           <label className="block text-xs font-semibold text-gray-700 mb-1.5">
-            Product Type
+            {t("materialForm.productType")}
           </label>
           <select
             {...register("category", { required: true })}
             className="w-full px-3.5 py-2 bg-white border border-gray-300 rounded text-sm text-gray-900 focus:outline-none focus:ring-1 focus:ring-[#008ba9]"
           >
-            <option value="Tiles">Tiles</option>
-            <option value="Bricks">Bricks</option>
-            <option value="Cement">Cement</option>
-            <option value="Steel">Steel</option>
-            <option value="Pipes">Pipes</option>
-            <option value="Paint">Paint</option>
-            <option value="Sanitary items">Sanitary items</option>
+            <option value="Tiles">{t("materialForm.categories.Tiles")}</option>
+            <option value="Bricks">{t("materialForm.categories.Bricks")}</option>
+            <option value="Cement">{t("materialForm.categories.Cement")}</option>
+            <option value="Steel">{t("materialForm.categories.Steel")}</option>
+            <option value="Pipes">{t("materialForm.categories.Pipes")}</option>
+            <option value="Paint">{t("materialForm.categories.Paint")}</option>
+            <option value="Sanitary items">
+              {t("materialForm.categories.Sanitary items")}
+            </option>
           </select>
         </div>
 
@@ -71,7 +80,7 @@ const ProductDetailsForm = ({
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className="block text-xs font-semibold text-gray-700 mb-1.5">
-              Quantity *
+              {t("materialForm.quantity")}
             </label>
             <input
               type="number"
@@ -82,16 +91,16 @@ const ProductDetailsForm = ({
           </div>
           <div>
             <label className="block text-xs font-semibold text-gray-700 mb-1.5">
-              Unit
+              {t("materialForm.unit")}
             </label>
             <select
               {...register("unit")}
               className="w-full px-3.5 py-2 bg-white border border-gray-300 rounded text-sm text-gray-900 focus:outline-none focus:ring-1 focus:ring-[#008ba9]"
             >
-              <option value="sqft">sqft</option>
-              <option value="bags">bags</option>
-              <option value="pcs">pcs</option>
-              <option value="ton">ton</option>
+              <option value="sqft">{t("materialForm.units.sqft")}</option>
+              <option value="bags">{t("materialForm.units.bags")}</option>
+              <option value="pcs">{t("materialForm.units.pcs")}</option>
+              <option value="ton">{t("materialForm.units.ton")}</option>
             </select>
           </div>
         </div>
@@ -100,20 +109,24 @@ const ProductDetailsForm = ({
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className="block text-xs font-semibold text-gray-700 mb-1.5">
-              Condition
+              {t("materialForm.condition")}
             </label>
             <select
               {...register("condition")}
               className="w-full px-3.5 py-2 bg-white border border-gray-300 rounded text-sm text-gray-900 focus:outline-none focus:ring-1 focus:ring-[#008ba9]"
             >
-              <option value="Unused">Unused</option>
-              <option value="Used - Good">Used - Good</option>
-              <option value="Scrap / Surplus">Scrap / Surplus</option>
+              <option value="Unused">{t("materialForm.conditions.Unused")}</option>
+              <option value="Used - Good">
+                {t("materialForm.conditions.Used - Good")}
+              </option>
+              <option value="Scrap / Surplus">
+                {t("materialForm.conditions.Scrap / Surplus")}
+              </option>
             </select>
           </div>
           <div>
             <label className="block text-xs font-semibold text-gray-700 mb-1.5">
-              Package unit (sqft) / Price (৳) *
+              {t("materialForm.pricePerUnit")}
             </label>
             <input
               type="number"
@@ -131,22 +144,22 @@ const ProductDetailsForm = ({
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className="block text-xs font-semibold text-gray-700 mb-1.5">
-              Brand
+              {t("materialForm.brand")}
             </label>
             <input
               type="text"
-              placeholder="Optional"
+              placeholder={t("materialForm.brandPlaceholder")}
               {...register("brand")}
               className="w-full px-3.5 py-2 bg-white border border-gray-300 rounded text-sm text-gray-900 focus:outline-none focus:ring-1 focus:ring-[#008ba9]"
             />
           </div>
           <div>
             <label className="block text-xs font-semibold text-gray-700 mb-1.5">
-              Location *
+              {t("materialForm.location")}
             </label>
             <input
               type="text"
-              placeholder="Bashundhara"
+              placeholder={t("materialForm.locationPlaceholder")}
               {...register("location", { required: true })}
               className="w-full px-3.5 py-2 bg-white border border-gray-300 rounded text-sm text-gray-900 focus:outline-none focus:ring-1 focus:ring-[#008ba9]"
             />
@@ -156,24 +169,24 @@ const ProductDetailsForm = ({
         {/* Amount of Advance (Seller Sets Advance Amount) */}
         <div>
           <label className="block text-xs font-semibold text-gray-700 mb-1.5">
-            Amount of advance (৳) <span className="text-red-500">*</span>
+            {t("materialForm.advanceAmount")} <span className="text-red-500">*</span>
           </label>
           <input
             type="number"
             min="0"
             step="any"
-            placeholder="e.g. 2000"
+            placeholder={t("materialForm.advancePlaceholder")}
             {...register("advanceAmount", {
-              required: "Advance amount is required",
+              required: t("materialForm.advanceRequired"),
               min: {
                 value: 0,
-                message: "Advance amount cannot be negative",
+                message: t("materialForm.advanceNegative"),
               },
             })}
             className="w-full px-3 py-2.5 bg-white border border-gray-300 rounded text-sm text-gray-900 focus:outline-none focus:ring-1 focus:ring-[#008ba9]"
           />
           <p className="text-[11px] text-gray-500 mt-1">
-            Buyers will pay this advance amount online to confirm their order.
+            {t("materialForm.advanceHint")}
           </p>
           {errors.advanceAmount && (
             <span className="text-red-500 text-xs mt-1 block">
@@ -185,7 +198,7 @@ const ProductDetailsForm = ({
         {/* Available from */}
         <div>
           <label className="block text-xs font-semibold text-gray-700 mb-1.5">
-            Available from *
+            {t("materialForm.availableFrom")}
           </label>
           <input
             type="date"
@@ -197,7 +210,7 @@ const ProductDetailsForm = ({
         {/* Description */}
         <div>
           <label className="block text-xs font-semibold text-gray-700 mb-1.5">
-            Description
+            {t("materialForm.description")}
           </label>
           <textarea
             rows="3"
@@ -213,32 +226,32 @@ const ProductDetailsForm = ({
             disabled={loading}
             className={`px-5 py-2.5 text-white text-xs font-semibold rounded transition-colors cursor-pointer ${
               isEditMode
-                ? "bg-[#1b5e3a] hover:bg-[#14472c]"
-                : "bg-[#c24e00] hover:hover:bg-[#a84300]"
+                ? "bg-[#1b5e3a] hover:bg-[#14472c] rounded-full"
+                : "bg-[#4f5bd5] hover:bg-[#3f4bc2] rounded-full"
             }`}
           >
             {loading
-              ? "Processing..."
+              ? t("materialForm.processing")
               : isEditMode
-                ? "Save changes"
-                : "Publish advertisement"}
+                ? t("materialForm.saveChanges")
+                : t("materialForm.publishAd")}
           </button>
 
           {onSaveDraft && (
             <button
               type="button"
               onClick={onSaveDraft}
-              className="px-5 py-2.5 bg-[#eae9e5] hover:bg-gray-200 text-gray-700 text-xs font-semibold rounded transition-colors cursor-pointer"
+              className="px-5 py-2.5 bg-[#eae9e5] hover:bg-gray-200 text-gray-700 text-xs font-semibold rounded transition-colors cursor-pointer rounded-full"
             >
-              {isEditMode ? "Cancel" : "Save draft"}
+              {isEditMode ? t("materialForm.cancel") : t("materialForm.saveDraft")}
             </button>
           )}
         </div>
 
         <p className="text-[11px] text-gray-400 mt-2 leading-tight">
           {isEditMode
-            ? "After you save, the advertisement updates immediately in preview."
-            : "Every advertisement is checked automatically. A flagged advertisement stays hidden until an admin reviews it."}
+            ? t("materialForm.editNotice")
+            : t("materialForm.createNotice")}
         </p>
       </div>
     </div>

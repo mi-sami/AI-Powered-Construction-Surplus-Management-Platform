@@ -1,6 +1,9 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 const MaterialPhotoUpload = ({ onImageSelect, previewUrl }) => {
+  const { t } = useTranslation();
+
   // ছবিকে রিসাইজ এবং কম্প্রেস করে ছোট Base64 স্ট্রিং বানানোর ফাংশন
   const compressAndConvertToBase64 = (file) => {
     const reader = new FileReader();
@@ -19,7 +22,7 @@ const MaterialPhotoUpload = ({ onImageSelect, previewUrl }) => {
         const ctx = canvas.getContext("2d");
         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
-        // JPEG ফরম্যাটে 70% কোয়ালিটিতে কম্প্রেস (সাইজ অনেক কমে যাবে)
+        // JPEG ফরম্যাটে 70% কোয়ালিটিতে কম্প্রেস (সাইজ অনেক কমে যাবে)
         const compressedBase64 = canvas.toDataURL("image/jpeg", 0.7);
         if (onImageSelect) {
           onImageSelect(compressedBase64);
@@ -45,7 +48,9 @@ const MaterialPhotoUpload = ({ onImageSelect, previewUrl }) => {
 
   return (
     <div className="bg-white rounded-lg border border-gray-200/80 p-6 shadow-sm">
-      <h3 className="text-base font-bold text-gray-900 mb-4">1. Material photo</h3>
+      <h3 className="text-base font-bold text-gray-900 mb-4">
+        {t("materialForm.photoTitle")}
+      </h3>
 
       {/* Dropzone / Preview Box */}
       <div
@@ -62,9 +67,11 @@ const MaterialPhotoUpload = ({ onImageSelect, previewUrl }) => {
         ) : (
           <div className="text-center p-4">
             <p className="text-xs text-gray-500 font-medium">
-              Drag & drop a photo here, or click below to browse
+              {t("materialForm.dropzoneText")}
             </p>
-            <p className="text-[11px] text-gray-400 mt-1">PNG, JPG (Auto-compressed)</p>
+            <p className="text-[11px] text-gray-400 mt-1">
+              {t("materialForm.photoFormat")}
+            </p>
           </div>
         )}
       </div>
@@ -72,7 +79,7 @@ const MaterialPhotoUpload = ({ onImageSelect, previewUrl }) => {
       {/* Choose Photo Button */}
       <div className="mt-4">
         <label className="inline-block px-4 py-2 bg-white border border-gray-300 hover:bg-gray-50 text-gray-800 text-xs font-semibold rounded shadow-sm cursor-pointer transition-colors">
-          Choose photo
+          {t("materialForm.choosePhoto")}
           <input
             type="file"
             accept="image/*"

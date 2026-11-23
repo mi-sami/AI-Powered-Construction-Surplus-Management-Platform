@@ -1,17 +1,17 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import ProductCard from "./ProductCard";
 
 const ProductGridSection = ({ products = [], loading = false }) => {
+  const { t } = useTranslation();
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 15; // প্রতি পেজে ১৫টি বিজ্ঞাপন
+  const itemsPerPage = 15;
   const scrollContainerRef = useRef(null);
 
-  // নতুন ফিল্টার বা সার্চ হলে ১ম পেজে ফিরে যাবে
   useEffect(() => {
     setCurrentPage(1);
   }, [products.length]);
 
-  // Pagination Calculations
   const totalItems = products.length;
   const totalPages = Math.ceil(totalItems / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
@@ -19,7 +19,6 @@ const ProductGridSection = ({ products = [], loading = false }) => {
 
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
-    // পেজ পরিবর্তন হলে স্ক্রলবার উপরে চলে যাবে
     if (scrollContainerRef.current) {
       scrollContainerRef.current.scrollTo({ top: 0, behavior: "smooth" });
     }
@@ -28,7 +27,7 @@ const ProductGridSection = ({ products = [], loading = false }) => {
   if (loading) {
     return (
       <div className="bg-white rounded-lg border border-gray-200 p-12 text-center text-gray-500 text-sm">
-        Loading surplus materials...
+        {t("searchPage.loading")}
       </div>
     );
   }
@@ -38,12 +37,15 @@ const ProductGridSection = ({ products = [], loading = false }) => {
       {/* Results Counter Header */}
       <div className="flex items-center justify-between mb-3 px-1">
         <p className="text-xs text-gray-600 font-medium">
-          Showing <span className="font-bold text-gray-900">{currentProducts.length}</span> of{" "}
-          <span className="font-bold text-gray-900">{totalItems}</span> advertisements
+          {t("searchPage.showing")}{" "}
+          <span className="font-bold text-gray-900">{currentProducts.length}</span>{" "}
+          {t("searchPage.of")}{" "}
+          <span className="font-bold text-gray-900">{totalItems}</span>{" "}
+          {t("searchPage.advertisements")}
         </p>
         {totalPages > 1 && (
           <p className="text-xs text-gray-500">
-            Page {currentPage} of {totalPages}
+            {t("searchPage.page")} {currentPage} {t("searchPage.of")} {totalPages}
           </p>
         )}
       </div>
@@ -61,12 +63,12 @@ const ProductGridSection = ({ products = [], loading = false }) => {
           </div>
         ) : (
           <div className="bg-white rounded-lg border border-gray-200 p-12 text-center text-gray-500 text-sm">
-            No surplus materials matched your search or filters.
+            {t("searchPage.noResults")}
           </div>
         )}
       </div>
 
-      {/* Pagination Controls (15 items per page) */}
+      {/* Pagination Controls */}
       {totalPages > 1 && (
         <div className="mt-6 pt-4 border-t border-gray-200/80 flex items-center justify-between">
           <button
@@ -75,7 +77,7 @@ const ProductGridSection = ({ products = [], loading = false }) => {
             onClick={() => handlePageChange(currentPage - 1)}
             className="px-3.5 py-1.5 bg-white border border-gray-300 rounded text-xs font-semibold text-gray-700 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
           >
-            ← Previous
+            {t("searchPage.previous")}
           </button>
 
           <div className="flex items-center space-x-1.5">
@@ -101,7 +103,7 @@ const ProductGridSection = ({ products = [], loading = false }) => {
             onClick={() => handlePageChange(currentPage + 1)}
             className="px-3.5 py-1.5 bg-white border border-gray-300 rounded text-xs font-semibold text-gray-700 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
           >
-            Next →
+            {t("searchPage.next")}
           </button>
         </div>
       )}

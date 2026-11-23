@@ -1,0 +1,463 @@
+{
+  "nav": {
+    "home": "Home",
+    "howItWorks": "How it works",
+    "smartTools": "Smart tools",
+    "login": "Login",
+    "register": "Register",
+    "dashboard": "Dashboard",
+    "buySell": "Buy & Sell",
+    "buy": "Buy",
+    "sell": "Sell",
+    "aiRecommendation": "AI Recommendation",
+    "profile": "Profile"
+  },
+  "search": {
+    "heading": "Buy Surplus Materials",
+    "subheading": "Browse and purchase verified surplus construction materials near you",
+    "filters": "Filters",
+    "reset": "Reset",
+    "applyFilters": "Apply Filters"
+  },"productDetails": {
+    "loading": "Loading product details...",
+    "notFound": "Product not found.",
+    "backToSearch": "← Back to Search",
+    "subtitle": "Check the details before you order."
+  },
+  "materialForm": {
+    "photoTitle": "1. Material photo",
+    "dropzoneText": "Drag & drop a photo here, or click below to browse",
+    "photoFormat": "PNG, JPG (Auto-compressed)",
+    "choosePhoto": "Choose photo",
+    "detailsTitleEdit": "Product details",
+    "detailsTitleCreate": "2. Product details",
+    "status": "Status",
+    "available": "Available",
+    "reserved": "Reserved",
+    "productName": "Product name *",
+    "productNamePlaceholder": "Name of the product",
+    "productNameRequired": "Product name is required",
+    "productType": "Product Type",
+    "categories": {
+      "Tiles": "Tiles",
+      "Bricks": "Bricks",
+      "Cement": "Cement",
+      "Steel": "Steel",
+      "Pipes": "Pipes",
+      "Paint": "Paint",
+      "Sanitary items": "Sanitary items"
+    },
+    "quantity": "Quantity *",
+    "unit": "Unit",
+    "units": {
+      "sqft": "sqft",
+      "bags": "bags",
+      "pcs": "pcs",
+      "ton": "ton"
+    },
+    "condition": "Condition",
+    "conditions": {
+      "Unused": "Unused",
+      "Used - Good": "Used - Good",
+      "Scrap / Surplus": "Scrap / Surplus"
+    },
+    "pricePerUnit": "Package unit (sqft) / Price (৳) *",
+    "brand": "Brand",
+    "brandPlaceholder": "Optional",
+    "location": "Location *",
+    "locationPlaceholder": "Bashundhara",
+    "advanceAmount": "Amount of advance (৳)",
+    "advancePlaceholder": "e.g. 2000",
+    "advanceRequired": "Advance amount is required",
+    "advanceNegative": "Advance amount cannot be negative",
+    "advanceHint": "Buyers will pay this advance amount online to confirm their order.",
+    "availableFrom": "Available from *",
+    "description": "Description",
+    "processing": "Processing...",
+    "saveChanges": "Save changes",
+    "publishAd": "Publish advertisement",
+    "cancel": "Cancel",
+    "saveDraft": "Save draft",
+    "editNotice": "After you save, the advertisement updates immediately in preview.",
+    "createNotice": "Every advertisement is checked automatically. A flagged advertisement stays hidden until an admin reviews it."
+  },
+  "addAdPage": {
+    "title": "Add new advertisement",
+    "subtitle": "Upload a photo of the product. New advertisements require admin approval before going live.",
+    "submitSuccess": "Advertisement submitted! It is now under admin review and will go live once approved.",
+    "submitError": "Failed to submit advertisement.",
+    "draftSaved": "Saved as draft!"
+  },
+  "searchPage": {
+    "heading": "Browse & Buy Materials",
+    "searchLabel": "Search",
+    "searchPlaceholder": "e.g. white glossy ceramic floor tile",
+    "filters": "Filters",
+    "reset": "Reset",
+    "applyFilters": "Apply Filters",
+    "productType": "Product Type",
+    "all": "All",
+    "brand": "Brand",
+    "brandPlaceholder": "e.g. RAK, BSRM",
+    "minPrice": "Min price",
+    "maxPrice": "Max price",
+    "any": "Any",
+    "condition": "Condition",
+    "conditions": {
+      "Any": "Any",
+      "Unused": "Unused",
+      "Like new": "Like new",
+      "Used - Good": "Used - Good",
+      "Scrap / Surplus": "Scrap / Surplus"
+    },
+    "location": "Location",
+    "locationPlaceholder": "e.g. Bashundhara",
+    "neededBy": "Needed by",
+    "photo": "Photo",
+    "locationNotSpecified": "Location not specified",
+    "verifiedSeller": "Verified seller",
+    "loading": "Loading surplus materials...",
+    "showing": "Showing",
+    "of": "of",
+    "advertisements": "advertisements",
+    "page": "Page",
+    "noResults": "No surplus materials matched your search or filters.",
+    "previous": "← Previous",
+    "next": "Next →"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "subtitle": "Your listings, requirements and orders.",
+    "defaultMaterialTitle": "Construction Material",
+    "defaultUnit": "units",
+    "stats": {
+      "activeAds": "Active advertisements",
+      "awaitingAdvance": "Orders awaiting advance",
+      "underReview": "Advertisements under review"
+    },
+    "ads": {
+      "heading": "My advertisements",
+      "colMaterial": "Material",
+      "colQuantity": "Quantity",
+      "colPrice": "Price",
+      "colStatus": "Status",
+      "loading": "Loading advertisements...",
+      "empty": "No advertisements posted yet.",
+      "bottomNote": "Under Review: price is far below the typical price for this material. An admin will check it.",
+      "statusActive": "Active",
+      "statusUnderReview": "Under Review",
+      "statusReserved": "Reserved"
+    },
+    "orders": {
+      "heading": "Recent orders",
+      "colOrder": "Order",
+      "colMaterial": "Material",
+      "colStatus": "Status",
+      "loading": "Loading orders...",
+      "empty": "No recent orders found.",
+      "statusConfirmed": "Confirmed",
+      "statusPendingAdvance": "Pending advance",
+      "statusPending": "Pending"
+    }
+  },
+  "requirementsPage": {
+    "title": "Post a requirement",
+    "subtitle": "Tell us what you need. We rank available surplus by how well it fits.",
+    "matchesTitle": "Matches",
+    "matchesFor": "Matches for {{type}}",
+    "findingMatches": "Finding best matches...",
+    "noMatchesForType": "No available surplus materials found for \"{{type}}\".",
+    "noMatchesRightNow": "No available surplus materials found right now.",
+    "card": {
+      "locationNA": "Location N/A",
+      "match": "Match",
+      "materialType": "Material type",
+      "quantity": "Quantity",
+      "price": "Price",
+      "location": "Location",
+      "matched": "Matched",
+      "partial": "Partial",
+      "viewAndOrder": "View and order"
+    },
+    "form": {
+      "heading": "Your requirement",
+      "productType": "Product type",
+      "selectProductType": "Select product type",
+      "specification": "Specification",
+      "anySpec": "Any {{type}} specification",
+      "selectTypeFirst": "Select product type first",
+      "quantity": "Quantity",
+      "any": "Any",
+      "unit": "Unit",
+      "brand": "Brand",
+      "optional": "Optional",
+      "maxBudget": "Max budget (৳)",
+      "noLimit": "No limit",
+      "upToBudget": "Up to ৳{{budget}} / unit",
+      "location": "Location",
+      "anyLocation": "Any location",
+      "findMatches": "Find matches"
+    }
+  },
+  "profilePage": {
+    "title": "Profile",
+    "subtitle": "Your account, security and projects.",
+    "incorrectPassword": "Current password is incorrect!",
+    "profileAndPasswordUpdated": "Profile and password updated successfully!",
+    "profileUpdated": "Profile updated successfully!",
+    "updateFailed": "Failed to update profile.",
+    "deleteSuccess": "Advertisement deleted successfully!",
+    "deleteFailed": "Failed to delete advertisement.",
+    "info": {
+      "uploadTitle": "Click to upload profile photo",
+      "invalidImage": "Please select a valid image file (JPG, PNG, WEBP).",
+      "imageTooLarge": "Image size must be less than 2MB.",
+      "avatarFailed": "Failed to update profile picture.",
+      "defaultName": "[Full name]",
+      "individual": "Individual",
+      "company": "Company",
+      "approved": "Approved",
+      "pending": "Pending",
+      "memberSince": "Member since",
+      "activeListings": "Active listings",
+      "orders": "Orders",
+      "logOut": "Log out"
+    },
+    "account": {
+      "heading": "Account details",
+      "companyName": "COMPANY NAME",
+      "fullName": "FULL NAME",
+      "companyPlaceholder": "Enter company name",
+      "fullNamePlaceholder": "Enter your full name",
+      "nameRequired": "Name is required",
+      "email": "EMAIL",
+      "emailRequired": "Email is required",
+      "phone": "PHONE",
+      "phoneRequired": "Phone is required",
+      "address": "ADDRESS",
+      "addressPlaceholder": "Enter your address",
+      "addressRequired": "Address is required",
+      "tradeLicenseLabel": "TRADE LICENSE NO.",
+      "nidLabel": "NID NO.",
+      "tradeLicensePlaceholder": "Trade license no.",
+      "nidPlaceholder": "NID no.",
+      "verifiedNote": "Your {{docType}} was verified by an admin. It is visible only to you and admins. Contact support to change it.",
+      "changePasswordHeading": "Change password",
+      "changePasswordHint": "Leave blank if you do not want to change your current password.",
+      "currentPassword": "CURRENT PASSWORD",
+      "currentPasswordRequired": "Current password is required to set a new password",
+      "newPassword": "NEW PASSWORD",
+      "minPasswordLength": "Min 6 characters",
+      "confirmNewPassword": "CONFIRM NEW PASSWORD",
+      "passwordsMismatch": "New passwords do not match",
+      "saving": "SAVING...",
+      "saveChanges": "SAVE CHANGES",
+      "cancel": "Cancel"
+    },
+    "ads": {
+      "heading": "My advertisements",
+      "addButton": "+ Add advertisement",
+      "confirmDelete": "Are you sure you want to remove this advertisement?",
+      "colProduct": "Product",
+      "colCategory": "Category",
+      "colQuantity": "Quantity",
+      "colPrice": "Price",
+      "colStatus": "Status",
+      "colActions": "Actions",
+      "loading": "Loading advertisements...",
+      "photo": "Photo",
+      "edit": "Edit",
+      "delete": "Delete",
+      "empty": "No advertisements found for your account. Click '+ Add advertisement' to create one.",
+      "bottomNote": "Edit opens the advertisement so you can change its details. Delete removes it after you confirm. Under Review means an admin is checking it; buyers cannot see it until it is approved.",
+      "statusAvailable": "Available",
+      "statusUnderReview": "Under Review",
+      "statusReserved": "Reserved",
+      "statusActive": "Active"
+    }
+  },
+  "notifications": {
+    "ariaLabel": "Notifications",
+    "header": "Notifications ({{count}} unread)",
+    "markAllRead": "Mark all as read",
+    "empty": "No notifications yet."
+  },
+  "homePage": {
+    "hero": {
+      "title": "Give leftover construction material a second life.",
+      "subtitle": "Have leftover building materials? Sell them here. Need materials? Find them here, often for less than new.",
+      "register": "Register",
+      "login": "Login"
+    },
+    "whatItDoes": {
+      "heading": "What the system does",
+      "description": "Construction projects often buy more material than they use. After the work is done, extra tiles, bricks, cement, steel, pipes, paint, doors, electrical and sanitary items are left behind. Our system connects the project that has them with the project that needs them.",
+      "cards": {
+        "recoverTitle": "Recover investment",
+        "recoverDesc": "Sellers turn unused material back into money instead of letting it sit on site.",
+        "reduceTitle": "Reduce waste",
+        "reduceDesc": "Material that is still good gets used again by another project.",
+        "buyTitle": "Buy only what you need",
+        "buyDesc": "Buyers find the exact material and quantity they need, often without buying new."
+      }
+    },
+    "howItWorks": {
+      "heading": "How it works",
+      "subtitle": "Five simple steps from leftover to sold.",
+      "steps": {
+        "registerTitle": "Register",
+        "registerDesc": "Sign up as a Company with a trade license no., or as an Individual with an NID no. An admin approves your account.",
+        "listTitle": "List surplus",
+        "listDesc": "Upload a photo. AI suggests the material type, color, pattern and surface. You confirm and publish.",
+        "findTitle": "Find or request",
+        "findDesc": "Search the listings, or post what you need and see the best matches ranked by Match Score.",
+        "orderTitle": "Order and pay advance",
+        "orderDesc": "Pay an advance online. Your order is confirmed when the advance payment succeeds.",
+        "receiptTitle": "Get the receipt",
+        "receiptDesc": "Both sides receive a receipt with each other company details to arrange the material."
+      }
+    },
+    "materials": {
+      "heading": "Materials you can find",
+      "list": [
+        "Tiles",
+        "Bricks",
+        "Cement",
+        "Steel",
+        "Pipes",
+        "Paint",
+        "Doors and windows",
+        "Electrical materials",
+        "Sanitary items"
+      ]
+    },
+    "smartTools": {
+      "heading": "Smart tools built in",
+      "subtitle": "AI helps listing, matching and keeping the marketplace trustworthy.",
+      "matchingTitle": "AI buyer-material matching",
+      "matchingDesc": "Your requirement is compared with available listings on type, quantity, brand, quality, condition, price, location and date.",
+      "checksTitle": "Suspicious listing checks",
+      "checksDesc": "Reused photos, unusually low prices and other warning signs are flagged for an admin to review."
+    },
+    "cta": {
+      "heading": "Ready to start?",
+      "subtitle": "Create a free account as a Company or as an Individual.",
+      "register": "Register",
+      "login": "Login"
+    }
+  },
+  "productDetails": {
+    "loading": "Loading product details...",
+    "notFound": "Product not found.",
+    "backToSearch": "← Back to Search",
+    "subtitle": "Check the details before you order.",
+    "photo": {
+      "heading": "Product photo",
+      "noPhoto": "No photo available"
+    },
+    "info": {
+      "heading": "Product details",
+      "perUnit": "৳{{price}} per {{unit}}",
+      "category": "Category",
+      "quantity": "Quantity",
+      "condition": "Condition",
+      "brand": "Brand",
+      "location": "Location",
+      "availableFrom": "Available from",
+      "seller": "Seller",
+      "immediately": "Immediately",
+      "notSpecified": "Not specified",
+      "defaultSeller": "Verified Seller"
+    },
+    "description": {
+      "heading": "Description",
+      "empty": "No additional description provided by the seller."
+    },
+    "orderAction": {
+      "heading": "Ready to order?",
+      "subtext": "৳{{price}} per {{unit}} • {{quantity}} {{unit}} available",
+      "buyNow": "Buy now"
+    },
+    "whatsapp": {
+      "heading": "Talk to the seller",
+      "noNumber": "Seller WhatsApp number is not available for this account.",
+      "replyNote": "{{sellerName}} · usually replies within {{replyTime}}",
+      "defaultReplyTime": "1 hour",
+      "chatButton": "Chat on WhatsApp",
+      "safetyNote": "Ask about delivery, pickup time or the material before you pay. Pay only through this page."
+    }
+  },
+  "advancePayment": {
+    "loading": "Loading payment details...",
+    "notFound": "Listing not found.",
+    "backToSearch": "← Back to Search",
+    "backToDetails": "← Back to Product Details",
+    "title": "Advance payment",
+    "orderFailed": "Failed to confirm order.",
+    "notifTitle": "New Order Confirmed & Receipt Ready",
+    "notifMessage": "{{buyerName}} confirmed an order for \"{{title}}\" and paid ৳{{amount}} advance. Click to view payment receipt."
+  },
+  "advancePayment": {
+    "loading": "Loading payment details...",
+    "notFound": "Listing not found.",
+    "backToSearch": "← Back to Search",
+    "backToDetails": "← Back to Product Details",
+    "title": "Advance payment",
+    "orderFailed": "Failed to confirm order.",
+    "notifTitle": "New Order Confirmed & Receipt Ready",
+    "notifMessage": "{{buyerName}} confirmed an order for \"{{title}}\" and paid ৳{{amount}} advance. Click to view payment receipt.",
+    "summary": {
+      "total": "Total",
+      "advanceNow": "Advance to pay now",
+      "reducedBySeller": "Reduced by seller",
+      "dueBalance": "Due balance"
+    },
+    "methods": {
+      "heading": "Payment method",
+      "bkash": "bKash",
+      "nagad": "Nagad",
+      "rocket": "Rocket",
+      "card": "Card",
+      "mobileWallet": "Mobile wallet",
+      "debitOrCredit": "Debit or credit",
+      "processing": "Processing...",
+      "confirmButton": "Pay advance and confirm order",
+      "footerNote": "The order is confirmed when the advance payment succeeds. Unpaid orders expire after 24 hours."
+    }
+  },
+  "receiptPage": {
+    "loading": "Loading payment receipt...",
+    "notFound": "Receipt not found.",
+    "backToDashboard": "← Back to Dashboard",
+    "backToSearch": "← Back to Search",
+    "title": "Payment receipt",
+    "orderConfirmed": "Order confirmed",
+    "downloadPdf": "Download PDF",
+    "metadata": {
+      "receiptNo": "Receipt no.",
+      "dateTime": "Date and time",
+      "orderId": "Order ID",
+      "transactionId": "Transaction ID"
+    },
+    "table": {
+      "material": "Material",
+      "qty": "Qty",
+      "unitPrice": "Unit price",
+      "total": "Total",
+      "advancePaid": "Advance paid",
+      "due": "Due"
+    },
+    "parties": {
+      "buyer": "Buyer",
+      "seller": "Seller",
+      "name": "Name",
+      "accountType": "Account type",
+      "address": "Address",
+      "phone": "Phone",
+      "email": "Email",
+      "nidNo": "NID no.",
+      "tradeLicenseNo": "Trade license no.",
+      "footerNote": "Contact the other party using the company details above to arrange the material."
+    }
+  }
+}

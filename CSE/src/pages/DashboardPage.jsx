@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
 import { fetchListings } from "../Feature/listingSlice";
 import { handleApiAction } from "../Utils/ApiHandler";
 import useAuthInfo from "../Hook/useAuthInfo";
@@ -8,6 +9,7 @@ import DashboardAdvertisements from "../Component/Dashboard/DashboardAdvertiseme
 import DashboardRecentOrders from "../Component/Dashboard/DashboardRecentOrders";
 
 const DashboardPage = () => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const { user } = useAuthInfo();
   const { items: allListings, loading: listingsLoading } = useSelector(
@@ -54,8 +56,9 @@ const DashboardPage = () => {
       );
       return {
         ...order,
-        materialTitle: matchedListing?.title || "Construction Material",
-        unit: matchedListing?.unit || "units",
+        materialTitle:
+          matchedListing?.title || t("dashboard.defaultMaterialTitle"),
+        unit: matchedListing?.unit || t("dashboard.defaultUnit"),
       };
     });
 
@@ -78,15 +81,17 @@ const DashboardPage = () => {
   return (
     <div className="min-h-screen bg-[#f7f6f2] font-sans text-gray-900 p-6 md:p-10">
       <div className="max-w-7xl mx-auto">
-        {/* Header Section (+ Add advertisement বাটন বাদ দেওয়া হয়েছে) */}
+        {/* Header Section */}
         <div className="mb-6">
-          <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
+          <h1 className="text-3xl font-bold text-gray-900">
+            {t("dashboard.title")}
+          </h1>
           <p className="text-xs text-gray-500 mt-1">
-            Your listings, requirements and orders.
+            {t("dashboard.subtitle")}
           </p>
         </div>
 
-        {/* 3 Stats Cards (Open requirements বাদ দেওয়া হয়েছে) */}
+        {/* 3 Stats Cards */}
         <DashboardStats
           activeAdsCount={activeAdsCount}
           awaitingAdvanceCount={awaitingAdvanceCount}
@@ -99,10 +104,7 @@ const DashboardPage = () => {
             advertisements={myListings}
             loading={listingsLoading}
           />
-          <DashboardRecentOrders
-            orders={myOrders}
-            loading={ordersLoading}
-          />
+          <DashboardRecentOrders orders={myOrders} loading={ordersLoading} />
         </div>
       </div>
     </div>

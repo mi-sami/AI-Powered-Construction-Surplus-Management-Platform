@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import useAuthInfo from "../Hook/useAuthInfo";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
 import ProfileInfo from "../Component/Profilecomponent/ProfileInfo.jsx";
 import AccountDetails from "../Component/Profilecomponent/AccountDetails.jsx";
 import MyProjects from "../Component/Profilecomponent/MyProjects.jsx";
@@ -11,6 +12,7 @@ import { fetchUserStats } from "../Feature/userStatsSlice";
 import { fetchListings, deleteListingThunk } from "../Feature/listingSlice";
 
 const Profile = () => {
+  const { t } = useTranslation();
   const { user, setUser, logOut } = useAuthInfo();
   const [loading, setLoading] = useState(false);
   const [updateSuccess, setUpdateSuccess] = useState("");
@@ -60,7 +62,6 @@ const Profile = () => {
     }
   }, [user, dispatch, setValue, isCompany]);
 
-  // Cancel বাটনে ক্লিক করলে আগের ডাটা রিসেট হবে ও পাসওয়ার্ড ঘর খালি হবে
   const handleResetForm = () => {
     setUpdateSuccess("");
     reset({
@@ -89,10 +90,9 @@ const Profile = () => {
     setLoading(true);
     setUpdateSuccess("");
 
-    // ১. পাসওয়ার্ড পরিবর্তনের ইনপুট দেওয়া থাকলে বর্তমান পাসওয়ার্ড যাচাই
     if (formData.newPassword) {
       if (String(formData.currentPassword) !== String(user.password)) {
-        alert("Current password is incorrect!");
+        alert(t("profilePage.incorrectPassword"));
         setLoading(false);
         return;
       }
@@ -123,20 +123,19 @@ const Profile = () => {
         setUser(newUserData);
         localStorage.setItem("user", JSON.stringify(newUserData));
 
-        // পাসওয়ার্ড ফিল্ডগুলো ক্লিয়ার করা
         setValue("currentPassword", "");
         setValue("newPassword", "");
         setValue("confirmNewPassword", "");
 
         setUpdateSuccess(
           formData.newPassword
-            ? "Profile and password updated successfully!"
-            : "Profile updated successfully!",
+            ? t("profilePage.profileAndPasswordUpdated")
+            : t("profilePage.profileUpdated"),
         );
       }
     } catch (error) {
       console.error("Profile Update Error:", error);
-      alert("Failed to update profile.");
+      alert(t("profilePage.updateFailed"));
     } finally {
       setLoading(false);
     }
@@ -149,9 +148,9 @@ const Profile = () => {
   const handleDeleteListing = async (id) => {
     try {
       await dispatch(deleteListingThunk(id)).unwrap();
-      alert("Advertisement deleted successfully!");
+      alert(t("profilePage.deleteSuccess"));
     } catch (error) {
-      alert("Failed to delete advertisement.");
+      alert(t("profilePage.deleteFailed"));
     }
   };
 
@@ -159,9 +158,11 @@ const Profile = () => {
     <div className="min-h-screen bg-[#f7f6f2] font-sans text-gray-900 p-6 md:p-12">
       <div className="max-w-6xl mx-auto">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Profile</h1>
+          <h1 className="text-3xl font-bold text-gray-900">
+            {t("profilePage.title")}
+          </h1>
           <p className="text-gray-500 text-sm mt-1">
-            Your account, security and projects.
+            {t("profilePage.subtitle")}
           </p>
         </div>
 
@@ -188,7 +189,6 @@ const Profile = () => {
               watch={watch}
             />
 
-            {/* Pass userListings to MyProjects */}
             <MyProjects
               projects={userListings}
               loading={listingsLoading}

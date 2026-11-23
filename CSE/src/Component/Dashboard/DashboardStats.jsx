@@ -1,21 +1,24 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 const DashboardStats = ({
   activeAdsCount = 0,
   awaitingAdvanceCount = 0,
   underReviewCount = 0,
 }) => {
+  const { t } = useTranslation();
+
   const stats = [
     {
-      label: "Active advertisements",
+      label: t("dashboard.stats.activeAds"),
       count: activeAdsCount,
     },
     {
-      label: "Orders awaiting advance",
+      label: t("dashboard.stats.awaitingAdvance"),
       count: awaitingAdvanceCount,
     },
     {
-      label: "Advertisements under review",
+      label: t("dashboard.stats.underReview"),
       count: underReviewCount,
     },
   ];

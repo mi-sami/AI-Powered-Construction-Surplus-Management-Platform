@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 const PaymentMethodSelector = ({
   selectedMethod,
@@ -6,32 +7,34 @@ const PaymentMethodSelector = ({
   onConfirmOrder,
   paying,
 }) => {
+  const { t } = useTranslation();
+
   const paymentMethods = [
     {
       id: "bKash",
-      name: "bKash",
-      subtitle: "Mobile wallet",
+      name: t("advancePayment.methods.bkash"),
+      subtitle: t("advancePayment.methods.mobileWallet"),
       badgeText: "bK",
       badgeBg: "bg-[#e2136e]",
     },
     {
       id: "Nagad",
-      name: "Nagad",
-      subtitle: "Mobile wallet",
+      name: t("advancePayment.methods.nagad"),
+      subtitle: t("advancePayment.methods.mobileWallet"),
       badgeText: "Ng",
       badgeBg: "bg-[#ed1c24]",
     },
     {
       id: "Rocket",
-      name: "Rocket",
-      subtitle: "Mobile wallet",
+      name: t("advancePayment.methods.rocket"),
+      subtitle: t("advancePayment.methods.mobileWallet"),
       badgeText: "Rk",
       badgeBg: "bg-[#8c3494]",
     },
     {
       id: "Card",
-      name: "Card",
-      subtitle: "Debit or credit",
+      name: t("advancePayment.methods.card"),
+      subtitle: t("advancePayment.methods.debitOrCredit"),
       badgeText: "▭",
       badgeBg: "bg-[#1e232a]",
     },
@@ -39,7 +42,9 @@ const PaymentMethodSelector = ({
 
   return (
     <div className="mt-6">
-      <p className="text-sm font-bold text-gray-900 mb-3">Payment method</p>
+      <p className="text-sm font-bold text-gray-900 mb-3">
+        {t("advancePayment.methods.heading")}
+      </p>
 
       <div className="grid grid-cols-2 gap-3">
         {paymentMethods.map((method) => {
@@ -80,13 +85,14 @@ const PaymentMethodSelector = ({
         disabled={paying}
         className="w-full mt-6 py-3 bg-[#b44b00] hover:bg-[#993f00] text-white font-semibold text-sm rounded-lg transition-colors cursor-pointer disabled:opacity-50"
       >
-        {paying ? "Processing..." : "Pay advance and confirm order"}
+        {paying
+          ? t("advancePayment.methods.processing")
+          : t("advancePayment.methods.confirmButton")}
       </button>
 
       {/* Footer Note */}
       <p className="text-[11px] text-gray-500 leading-relaxed mt-3">
-        The order is confirmed when the advance payment succeeds. Unpaid orders
-        expire after 24 hours.
+        {t("advancePayment.methods.footerNote")}
       </p>
     </div>
   );

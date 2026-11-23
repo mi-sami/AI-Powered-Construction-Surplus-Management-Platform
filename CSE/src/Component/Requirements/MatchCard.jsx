@@ -1,16 +1,22 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 const MatchCard = ({ item }) => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { matchPercentage, breakdown } = item;
 
   const progressBars = [
-    { label: "Material type", matched: breakdown.productType },
-    { label: "Quantity", matched: breakdown.quantity },
-    { label: "Price", matched: breakdown.price },
-    { label: "Location", matched: breakdown.location },
+    { label: t("requirementsPage.card.materialType"), matched: breakdown.productType },
+    { label: t("requirementsPage.card.quantity"), matched: breakdown.quantity },
+    { label: t("requirementsPage.card.price"), matched: breakdown.price },
+    { label: t("requirementsPage.card.location"), matched: breakdown.location },
   ];
+
+  const translatedUnit = item.unit
+    ? t(`materialForm.units.${item.unit}`, { defaultValue: item.unit })
+    : "";
 
   return (
     <div className="bg-white rounded-lg border border-gray-200/80 p-6 shadow-sm">
@@ -19,8 +25,8 @@ const MatchCard = ({ item }) => {
         <div>
           <h3 className="text-base font-bold text-gray-900">{item.title}</h3>
           <p className="text-xs text-gray-500 mt-0.5">
-            {item.quantity} {item.unit} • ৳{item.pricePerUnit}/{item.unit} •{" "}
-            {item.location || "Location N/A"}
+            {item.quantity} {translatedUnit} • ৳{item.pricePerUnit}/{translatedUnit} •{" "}
+            {item.location || t("requirementsPage.card.locationNA")}
           </p>
         </div>
 
@@ -28,7 +34,9 @@ const MatchCard = ({ item }) => {
           <p className="text-2xl font-bold text-gray-900 leading-none">
             {matchPercentage}%
           </p>
-          <p className="text-[11px] text-gray-400 mt-1">Match</p>
+          <p className="text-[11px] text-gray-400 mt-1">
+            {t("requirementsPage.card.match")}
+          </p>
         </div>
       </div>
 
@@ -39,7 +47,9 @@ const MatchCard = ({ item }) => {
             <div className="flex justify-between text-[11px] text-gray-600 mb-1">
               <span>{bar.label}</span>
               <span className="font-medium text-gray-400">
-                {bar.matched ? "Matched" : "Partial"}
+                {bar.matched
+                  ? t("requirementsPage.card.matched")
+                  : t("requirementsPage.card.partial")}
               </span>
             </div>
             <div className="w-full h-1.5 bg-[#ebe8e0] rounded-full overflow-hidden">
@@ -56,9 +66,9 @@ const MatchCard = ({ item }) => {
       <button
         type="button"
         onClick={() => navigate(`/product/${item.id}`)}
-        className="px-6 py-2.5 text-xs font-bold  tracking-wider rounded-full bg-[#4f5bd5] hover:bg-[#3f4bc2] text-white shadow-md shadow-[#4f5bd5]/25 transition-all cursor-pointer disabled:opacity-50"
+        className="px-6 py-2.5 text-xs font-bold tracking-wider rounded-full bg-[#4f5bd5] hover:bg-[#3f4bc2] text-white shadow-md shadow-[#4f5bd5]/25 transition-all cursor-pointer disabled:opacity-50"
       >
-        View and order
+        {t("requirementsPage.card.viewAndOrder")}
       </button>
     </div>
   );

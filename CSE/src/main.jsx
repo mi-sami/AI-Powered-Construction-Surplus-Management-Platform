@@ -6,6 +6,7 @@ import Store from './Redux/Store.js'; // 👈 Store ফাইলের পাথ
 import App from './App.jsx';
 import AuthProvider from './Context/AuthProvidor.jsx';
 import './index.css';
+import "./i18n";
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>

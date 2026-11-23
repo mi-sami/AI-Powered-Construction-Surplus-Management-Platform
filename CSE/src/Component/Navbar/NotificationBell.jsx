@@ -1,14 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { handleApiAction } from '../../Utils/ApiHandler';
 
 const NotificationBell = ({ userId }) => {
+  const { t, i18n } = useTranslation();
   const [notifications, setNotifications] = useState([]);
   const [isNotifOpen, setIsNotifOpen] = useState(false);
   const notifRef = useRef(null);
   const navigate = useNavigate();
 
-  // handleApiAction দিয়ে লগইন করা ইউজারের নোটিফিকেশন লোড করা
+  // handleApiAction দিয়ে লগইন করা ইউজারের নোটিফিকেশন লোড করা
   useEffect(() => {
     if (!userId) return;
 
@@ -39,7 +41,7 @@ const NotificationBell = ({ userId }) => {
     return () => clearInterval(interval);
   }, [userId]);
 
-  // ড্রপডাউনের বাইরে ক্লিক করলে বন্ধ হয়ে যাবে
+  // ড্রপডাউনের বাইরে ক্লিক করলে বন্ধ হয়ে যাবে
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (notifRef.current && !notifRef.current.contains(e.target)) {
@@ -95,12 +97,14 @@ const NotificationBell = ({ userId }) => {
     }
   };
 
+  const dateLocale = i18n.language?.startsWith('bn') ? 'bn-BD' : 'en-US';
+
   return (
     <div className="relative" ref={notifRef}>
       <button
         type="button"
         onClick={() => setIsNotifOpen((prev) => !prev)}
-        aria-label="Notifications"
+        aria-label={t('notifications.ariaLabel')}
         className="relative p-2 text-gray-300 hover:text-white bg-[#252b33] hover:bg-[#2f3640] rounded-full transition cursor-pointer"
       >
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -123,14 +127,14 @@ const NotificationBell = ({ userId }) => {
         <div className="absolute right-0 mt-3 w-80 sm:w-96 bg-[#252b33] border border-gray-700 rounded-lg shadow-2xl overflow-hidden z-50">
           <div className="px-4 py-3 bg-[#1e232a] border-b border-gray-700 flex items-center justify-between">
             <span className="text-sm font-semibold text-white">
-              Notifications ({unreadCount} unread)
+              {t('notifications.header', { count: unreadCount })}
             </span>
             {unreadCount > 0 && (
               <button
                 onClick={handleMarkAllRead}
                 className="text-xs text-[#008ba9] hover:underline cursor-pointer"
               >
-                Mark all as read
+                {t('notifications.markAllRead')}
               </button>
             )}
           </div>
@@ -138,7 +142,7 @@ const NotificationBell = ({ userId }) => {
           <div className="max-h-80 overflow-y-auto divide-y divide-gray-700/70">
             {notifications.length === 0 ? (
               <div className="p-6 text-center text-xs text-gray-400">
-                No notifications yet.
+                {t('notifications.empty')}
               </div>
             ) : (
               notifications.map((notif) => (
@@ -161,7 +165,7 @@ const NotificationBell = ({ userId }) => {
                     {notif.message}
                   </p>
                   <p className="text-[10px] text-gray-500 mt-1.5">
-                    {new Date(notif.createdAt).toLocaleString()}
+                    {new Date(notif.createdAt).toLocaleString(dateLocale)}
                   </p>
                 </div>
               ))
