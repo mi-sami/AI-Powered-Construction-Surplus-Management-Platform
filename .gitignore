@@ -49,7 +49,7 @@ __pycache__/
 *.pkl
 *.joblib
 *.sav
-models/
+
 datasets/
 data/
 
