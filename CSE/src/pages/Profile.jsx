@@ -10,7 +10,7 @@ import MyProjects from "../Component/Profilecomponent/MyProjects.jsx";
 import { handleApiAction } from "../Utils/ApiHandler";
 import { fetchUserStats } from "../Feature/userStatsSlice";
 import { fetchListings, deleteListingThunk } from "../Feature/listingSlice";
-import { fetchListings, deleteListingThunk } from "../Feature/listingSlice";
+
 
 const Profile = () => {
   const { t } = useTranslation();
@@ -41,8 +41,7 @@ const Profile = () => {
     setValue,
     watch,
     reset,
-    watch,
-    reset,
+    
     formState: { errors },
   } = useForm();
 
@@ -128,11 +127,7 @@ const Profile = () => {
           ...updatePayload,
           ...updatedUserResponse,
         };
-        const newUserData = {
-          ...user,
-          ...updatePayload,
-          ...updatedUserResponse,
-        };
+        
         setUser(newUserData);
         localStorage.setItem("user", JSON.stringify(newUserData));
 
@@ -201,8 +196,8 @@ const Profile = () => {
               updateSuccess={updateSuccess}
               reset={handleResetForm}
               watch={watch}
-              reset={handleResetForm}
-              watch={watch}
+              
+              
             />
 
             <MyProjects
@@ -210,7 +205,7 @@ const Profile = () => {
               loading={listingsLoading}
               onAddProject={handleAddProject}
               onDeleteProject={handleDeleteListing}
-              onDeleteProject={handleDeleteListing}
+              
             />
           </div>
         </div>

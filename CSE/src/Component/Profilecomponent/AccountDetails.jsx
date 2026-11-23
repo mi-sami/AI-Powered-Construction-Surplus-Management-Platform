@@ -23,12 +23,10 @@ const AccountDetails = ({
 
       {updateSuccess && (
         <div className="mb-4 p-3 bg-emerald-50 border-l-2 border-emerald-500 text-emerald-700 text-xs">
-        <div className="mb-4 p-3 bg-emerald-50 border-l-2 border-emerald-500 text-emerald-700 text-xs">
           {updateSuccess}
         </div>
       )}
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         {/* Full Name / Company Name */}
         <div>
@@ -56,14 +54,10 @@ const AccountDetails = ({
             <span className="text-red-500 text-[11px] mt-1 block">
               {errors.name.message}
             </span>
-            <span className="text-red-500 text-[11px] mt-1 block">
-              {errors.name.message}
-            </span>
           )}
         </div>
 
         {/* Email & Phone */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
           <div>
             <label className="block text-[10px] font-bold tracking-widest text-gray-900 uppercase mb-1">
@@ -81,9 +75,6 @@ const AccountDetails = ({
               />
             </div>
             {errors.email && (
-              <span className="text-red-500 text-[11px] mt-1 block">
-                {errors.email.message}
-              </span>
               <span className="text-red-500 text-[11px] mt-1 block">
                 {errors.email.message}
               </span>
@@ -109,9 +100,6 @@ const AccountDetails = ({
               <span className="text-red-500 text-[11px] mt-1 block">
                 {errors.phone.message}
               </span>
-              <span className="text-red-500 text-[11px] mt-1 block">
-                {errors.phone.message}
-              </span>
             )}
           </div>
         </div>
@@ -133,9 +121,6 @@ const AccountDetails = ({
             />
           </div>
           {errors.address && (
-            <span className="text-red-500 text-[11px] mt-1 block">
-              {errors.address.message}
-            </span>
             <span className="text-red-500 text-[11px] mt-1 block">
               {errors.address.message}
             </span>
@@ -266,7 +251,6 @@ const AccountDetails = ({
             type="submit"
             disabled={loading}
             className="px-6 py-2.5 text-xs font-bold uppercase tracking-wider rounded-full bg-[#4f5bd5] hover:bg-[#3f4bc2] text-white shadow-md shadow-[#4f5bd5]/25 transition-all cursor-pointer disabled:opacity-50"
-            className="px-6 py-2.5 text-xs font-bold uppercase tracking-wider rounded-full bg-[#4f5bd5] hover:bg-[#3f4bc2] text-white shadow-md shadow-[#4f5bd5]/25 transition-all cursor-pointer disabled:opacity-50"
           >
             {loading
               ? t("profilePage.account.saving")
@@ -275,7 +259,6 @@ const AccountDetails = ({
           <button
             type="button"
             onClick={() => reset()}
-            className="px-6 py-2.5 bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 text-xs font-semibold rounded-full transition-colors cursor-pointer"
             className="px-6 py-2.5 bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 text-xs font-semibold rounded-full transition-colors cursor-pointer"
           >
             {t("profilePage.account.cancel")}
