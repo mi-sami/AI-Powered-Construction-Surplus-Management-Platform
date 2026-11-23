@@ -10,6 +10,7 @@ import MyProjects from "../Component/Profilecomponent/MyProjects.jsx";
 import { handleApiAction } from "../Utils/ApiHandler";
 import { fetchUserStats } from "../Feature/userStatsSlice";
 import { fetchListings, deleteListingThunk } from "../Feature/listingSlice";
+import { fetchListings, deleteListingThunk } from "../Feature/listingSlice";
 
 const Profile = () => {
   const { t } = useTranslation();
@@ -40,12 +41,15 @@ const Profile = () => {
     setValue,
     watch,
     reset,
+    watch,
+    reset,
     formState: { errors },
   } = useForm();
 
   useEffect(() => {
     if (user?.id) {
       dispatch(fetchUserStats(user.id));
+      dispatch(fetchListings());
       dispatch(fetchListings());
 
       setValue("name", user.name || "");
@@ -56,6 +60,9 @@ const Profile = () => {
         "licenseOrNid",
         isCompany ? user.tradeLicenseNo || "" : user.nidNo || "",
       );
+      setValue("currentPassword", "");
+      setValue("newPassword", "");
+      setValue("confirmNewPassword", "");
       setValue("currentPassword", "");
       setValue("newPassword", "");
       setValue("confirmNewPassword", "");
@@ -112,9 +119,15 @@ const Profile = () => {
         action: "EDIT",
         target: "users",
         payload: updatePayload,
+        payload: updatePayload,
       });
 
       if (updatedUserResponse) {
+        const newUserData = {
+          ...user,
+          ...updatePayload,
+          ...updatedUserResponse,
+        };
         const newUserData = {
           ...user,
           ...updatePayload,
@@ -144,6 +157,7 @@ const Profile = () => {
   const handleAddProject = () => {
     navigate("/add-advertisement");
   };
+
 
   const handleDeleteListing = async (id) => {
     try {
@@ -187,12 +201,15 @@ const Profile = () => {
               updateSuccess={updateSuccess}
               reset={handleResetForm}
               watch={watch}
+              reset={handleResetForm}
+              watch={watch}
             />
 
             <MyProjects
               projects={userListings}
               loading={listingsLoading}
               onAddProject={handleAddProject}
+              onDeleteProject={handleDeleteListing}
               onDeleteProject={handleDeleteListing}
             />
           </div>
