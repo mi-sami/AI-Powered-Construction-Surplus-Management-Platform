@@ -1,9 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { handleApiAction } from "../Utils/ApiHandler";
+import useAuthInfo from "../Hook/useAuthInfo";
+import AdminNavbar from "../Component/Admin/AdminNavbar";
+import UserApprovals from "../Component/Admin/UserApprovalComponent/UserApprovals";
+import AdminUsers from "../Component/Admin/AdminPageUserList/AdminUsers";
+import AdminListings from "../Component/Admin/AdminPageListing/AdminListings";
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
+  const { setUser } = useAuthInfo();
   const [activeTab, setActiveTab] = useState("Flagged listings");
   const [listings, setListings] = useState([]);
   const [users, setUsers] = useState([]);
@@ -12,7 +18,14 @@ const AdminDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [actionMessage, setActionMessage] = useState("");
 
-  const navTabs = ["Flagged listings", "Users", "Listings", "Reports", "Settings"];
+  const navTabs = [
+    "Flagged listings",
+    "Account Approvals",
+    "Users",
+    "Listings",
+    "Reports",
+    "Settings",
+  ];
 
   // ডেটাবেস থেকে listings এবং users লোড করা
   useEffect(() => {
@@ -30,15 +43,18 @@ const AdminDashboard = () => {
         setListings(safeListings);
         setUsers(safeUsers);
 
-        // db.json থেকে suspicious বা flagged আইটেমগুলো সাজানো
+        // suspicious বা flagged আইটেমগুলো সাজানো
         const mappedFlagged = safeListings
-          .filter((item) => item.isSuspicious || item.status === "flagged" || item.riskLevel)
+          .filter(
+            (item) =>
+              item.isSuspicious || item.status === "flagged" || item.riskLevel
+          )
           .map((item) => {
             const seller = safeUsers.find(
-              (u) => String(u.id) === String(item.sellerId)
+              (u) => String(u.id || u._id) === String(item.sellerId)
             );
             return {
-              id: item.id,
+              id: item.id || item._id,
               type: "listing",
               title: `${item.title}, ${item.quantity} ${item.unit}`,
               sellerName: seller ? seller.name : `Seller #${item.sellerId}`,
@@ -56,7 +72,6 @@ const AdminDashboard = () => {
             };
           });
 
-        // যদি db.json-এ কোনো suspicious লিস্টিং না থাকে, তবে ডিজাইনের মতো ডেমো ডেটা দেখাবে
         const finalItems =
           mappedFlagged.length > 0
             ? mappedFlagged
@@ -166,9 +181,10 @@ const AdminDashboard = () => {
       if (selectedItem.type === "listing") {
         if (actionType === "approve" || actionType === "false_positive") {
           await handleApiAction({
-            action: "PATCH",
-            target: `listings/${selectedItem.id}`,
-            data: {
+            action: "EDIT",
+            target: "listings",
+            payload: {
+              id: selectedItem.id,
               status: "available",
               isSuspicious: false,
               reviewStatus: "Closed",
@@ -176,9 +192,10 @@ const AdminDashboard = () => {
           });
         } else if (actionType === "reject") {
           await handleApiAction({
-            action: "PATCH",
-            target: `listings/${selectedItem.id}`,
-            data: {
+            action: "EDIT",
+            target: "listings",
+            payload: {
+              id: selectedItem.id,
               status: "rejected",
               isSuspicious: true,
               reviewStatus: "Closed",
@@ -189,25 +206,31 @@ const AdminDashboard = () => {
 
       if (actionType === "warn" && selectedItem.sellerId) {
         await handleApiAction({
-          action: "PATCH",
-          target: `users/${selectedItem.sellerId}`,
-          data: { warningCount: 1, lastWarnedAt: new Date().toISOString() },
+          action: "EDIT",
+          target: "users",
+          payload: {
+            id: selectedItem.sellerId,
+            warningCount: 1,
+            lastWarnedAt: new Date().toISOString(),
+          },
         });
       }
 
       if (actionType === "suspend" && selectedItem.sellerId) {
         await handleApiAction({
-          action: "PATCH",
-          target: `users/${selectedItem.sellerId}`,
-          data: { isSuspended: true, status: "suspended" },
+          action: "EDIT",
+          target: "users",
+          payload: {
+            id: selectedItem.sellerId,
+            isSuspended: true,
+            status: "suspended",
+          },
         });
       }
     } catch (err) {
-      // ডেমো আইটেম db.json-এ না থাকলে লোকাল স্টেট আপডেট চলবে
       console.warn("API update skipped or item is mock:", err);
     }
 
-    // UI-তে স্ট্যাটাস Open থেকে Closed করা
     const updatedList = flaggedItems.map((item) =>
       item.id === selectedItem.id ? { ...item, reviewStatus: "Closed" } : item
     );
@@ -226,51 +249,39 @@ const AdminDashboard = () => {
 
   const handleLogout = () => {
     localStorage.removeItem("user");
-    navigate("/admin/login");
+    localStorage.removeItem("adminAuth");
+    if (setUser) setUser(null);
+    navigate("/admin/login", { replace: true });
   };
+
+  const pendingApprovalsCount = users.filter(
+    (u) =>
+      u.role !== "admin" &&
+      u.accountType !== "Admin" &&
+      (u.status || "pending").toLowerCase() === "pending"
+  ).length;
 
   return (
     <div className="min-h-screen bg-[#f7f6f2] font-sans text-gray-900">
-      {/* Top Dark Navigation Bar */}
-      <header className="bg-[#181a1b] text-white px-6 md:px-10 h-14 flex items-center justify-between">
-        <div className="flex items-center gap-8 h-full">
-          <span className="font-bold text-base tracking-tight text-white">
-            Surplus Exchange Admin
-          </span>
-
-          <nav className="flex items-center gap-6 h-full">
-            {navTabs.map((tab) => {
-              const isActive = activeTab === tab;
-              return (
-                <button
-                  key={tab}
-                  onClick={() => setActiveTab(tab)}
-                  className={`h-full flex items-center text-xs font-medium border-b-2 transition cursor-pointer ${
-                    isActive
-                      ? "border-[#d9531e] text-white"
-                      : "border-transparent text-gray-400 hover:text-gray-200"
-                  }`}
-                >
-                  {tab}
-                </button>
-              );
-            })}
-          </nav>
-        </div>
-
-        <button
-          onClick={handleLogout}
-          className="text-xs text-gray-300 hover:text-white border border-gray-600 px-3 py-1 rounded transition cursor-pointer"
-        >
-          Logout
-        </button>
-      </header>
+      {/* Separate Admin Navbar Component */}
+      <AdminNavbar
+        navTabs={navTabs}
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        onLogout={handleLogout}
+        pendingCount={pendingApprovalsCount}
+      />
 
       {/* Main Content Area */}
       <main className="max-w-7xl mx-auto px-6 md:px-10 py-8">
+        {/* Account Approvals Tab View */}
+        {activeTab === "Account Approvals" && (
+          <UserApprovals users={users} setUsers={setUsers} loading={loading} />
+        )}
+
+        {/* Flagged Listings Tab View */}
         {activeTab === "Flagged listings" && (
           <>
-            {/* Page Heading */}
             <div className="mb-6">
               <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
                 Flagged listings and accounts
@@ -280,7 +291,6 @@ const AdminDashboard = () => {
               </p>
             </div>
 
-            {/* 2-Column Layout: Left Table (8 cols) + Right Review Panel (4 cols) */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
               {/* Left Table Card */}
               <div className="lg:col-span-8 bg-white rounded-lg border border-gray-200/90 p-6 shadow-xs">
@@ -298,7 +308,10 @@ const AdminDashboard = () => {
                     <tbody className="divide-y divide-gray-200 text-xs text-gray-800">
                       {loading ? (
                         <tr>
-                          <td colSpan="5" className="py-8 text-center text-gray-500">
+                          <td
+                            colSpan="5"
+                            className="py-8 text-center text-gray-500"
+                          >
                             Loading flagged items...
                           </td>
                         </tr>
@@ -355,15 +368,14 @@ const AdminDashboard = () => {
                         selectedItem.level?.toLowerCase() === "high"
                           ? "border-red-400 text-red-700 bg-red-50"
                           : selectedItem.level?.toLowerCase() === "medium"
-                          ? "border-amber-500 text-amber-800 bg-amber-50"
-                          : "border-emerald-500 text-emerald-700 bg-emerald-50"
+                            ? "border-amber-500 text-amber-800 bg-amber-50"
+                            : "border-emerald-500 text-emerald-700 bg-emerald-50"
                       }`}
                     >
                       {selectedItem.level} risk
                     </span>
                   </div>
 
-                  {/* Why it was flagged */}
                   <div className="mt-5">
                     <h3 className="text-sm font-bold text-gray-900 mb-2">
                       Why it was flagged
@@ -375,7 +387,6 @@ const AdminDashboard = () => {
                     </ul>
                   </div>
 
-                  {/* Evidence Box */}
                   <div className="mt-5">
                     {selectedItem.images && selectedItem.images.length > 0 ? (
                       <div className="border border-dashed border-gray-400 rounded-md p-2 bg-[#ebe8e1]">
@@ -401,7 +412,6 @@ const AdminDashboard = () => {
                     </div>
                   )}
 
-                  {/* Action Buttons */}
                   <div className="mt-5 space-y-2.5">
                     <button
                       onClick={() => handleModerationAction("approve")}
@@ -446,62 +456,17 @@ const AdminDashboard = () => {
 
         {/* Users Tab View */}
         {activeTab === "Users" && (
-          <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <h2 className="text-xl font-bold mb-4">Registered Users ({users.length})</h2>
-            <table className="w-full text-left border-collapse text-xs">
-              <thead>
-                <tr className="border-b-2 border-gray-800 font-bold">
-                  <th className="py-2">Name</th>
-                  <th className="py-2">Email</th>
-                  <th className="py-2">Company</th>
-                  <th className="py-2">Role</th>
-                  <th className="py-2">Verified</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200">
-                {users.map((u) => (
-                  <tr key={u.id}>
-                    <td className="py-3 font-medium">{u.name}</td>
-                    <td className="py-3">{u.email}</td>
-                    <td className="py-3">{u.companyName || "—"}</td>
-                    <td className="py-3 capitalize">{u.role}</td>
-                    <td className="py-3">{u.isVerified ? "Yes" : "No"}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <AdminUsers users={users} setUsers={setUsers} loading={loading} />
         )}
 
         {/* All Listings Tab View */}
         {activeTab === "Listings" && (
-          <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <h2 className="text-xl font-bold mb-4">All Marketplace Listings ({listings.length})</h2>
-            <table className="w-full text-left border-collapse text-xs">
-              <thead>
-                <tr className="border-b-2 border-gray-800 font-bold">
-                  <th className="py-2">Title</th>
-                  <th className="py-2">Price</th>
-                  <th className="py-2">Quantity</th>
-                  <th className="py-2">Status</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200">
-                {listings.map((item) => (
-                  <tr key={item.id}>
-                    <td className="py-3 font-medium">{item.title}</td>
-                    <td className="py-3">
-                      {item.price} {item.currency}
-                    </td>
-                    <td className="py-3">
-                      {item.quantity} {item.unit}
-                    </td>
-                    <td className="py-3 capitalize">{item.status}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <AdminListings
+            listings={listings}
+            setListings={setListings}
+            users={users}
+            loading={loading}
+          />
         )}
 
         {/* Reports & Settings Placeholder */}
