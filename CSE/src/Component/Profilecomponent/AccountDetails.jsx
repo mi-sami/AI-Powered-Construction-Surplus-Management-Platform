@@ -57,28 +57,22 @@ const AccountDetails = ({
           )}
         </div>
 
-        {/* Email & Phone */}
+        {/* Email (Readonly / Disabled) & Phone */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
           <div>
             <label className="block text-[10px] font-bold tracking-widest text-gray-900 uppercase mb-1">
               {t("profilePage.account.email")}{" "}
               <span className="text-red-500">*</span>
             </label>
-            <div className="relative flex items-center border-b border-gray-300 focus-within:border-[#4f5bd5] pb-1.5">
+            <div className="relative flex items-center border-b border-dashed border-gray-300 bg-gray-100/70 px-2 py-1.5 rounded-t-xs">
               <input
                 type="email"
+                disabled
                 placeholder="you@example.com"
-                {...register("email", {
-                  required: t("profilePage.account.emailRequired"),
-                })}
-                className="w-full bg-transparent text-sm font-medium text-[#4f5bd5] placeholder-gray-500 focus:outline-none"
+                {...register("email")}
+                className="w-full bg-transparent text-sm font-medium text-gray-600 cursor-not-allowed select-none focus:outline-none"
               />
             </div>
-            {errors.email && (
-              <span className="text-red-500 text-[11px] mt-1 block">
-                {errors.email.message}
-              </span>
-            )}
           </div>
 
           <div>
