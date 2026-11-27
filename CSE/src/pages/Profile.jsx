@@ -11,7 +11,6 @@ import { handleApiAction } from "../Utils/ApiHandler";
 import { fetchUserStats } from "../Feature/userStatsSlice";
 import { fetchListings, deleteListingThunk } from "../Feature/listingSlice";
 
-
 const Profile = () => {
   const { t } = useTranslation();
   const { user, setUser, logOut } = useAuthInfo();
@@ -41,7 +40,7 @@ const Profile = () => {
     setValue,
     watch,
     reset,
-    
+   
     formState: { errors },
   } = useForm();
 
@@ -122,12 +121,12 @@ const Profile = () => {
       });
 
       if (updatedUserResponse) {
+        
         const newUserData = {
           ...user,
           ...updatePayload,
           ...updatedUserResponse,
         };
-        
         setUser(newUserData);
         localStorage.setItem("user", JSON.stringify(newUserData));
 
