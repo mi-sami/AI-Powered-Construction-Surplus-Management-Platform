@@ -1,5 +1,5 @@
 import React from "react";
-import { Navigate, Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes, useOutletContext } from "react-router-dom";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -18,6 +18,59 @@ import PaymentReceiptPage from "./pages/PaymentReceiptPage";
 import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminProtectedRoute from "./Component/AuthenticatedFolder/AdminProtectedRoute";
+
+// অ্যাডমিন ড্যাশবোর্ডের সাব-কম্পোনেন্টগুলো
+import FlaggedListings from "./Component/Admin/FlaggedListings/FlaggedListings";
+import UserApprovals from "./Component/Admin/UserApprovalComponent/UserApprovals";
+import AdminUsers from "./Component/Admin/AdminPageUserList/AdminUsers";
+import AdminListings from "./Component/Admin/AdminPageListing/AdminListings";
+import AdminReports from "./Component/Admin/AdminReports/AdminReports";
+import AdminSettings from "./Component/Admin/AdminSettings/AdminSettings";
+
+// Outlet context থেকে প্রপস পাস করার ব্রিজ কম্পোনেন্টসমূহ
+const FlaggedRoute = () => {
+  const { flaggedItems, setFlaggedItems, loading } = useOutletContext();
+  return (
+    <FlaggedListings
+      flaggedItems={flaggedItems}
+      setFlaggedItems={setFlaggedItems}
+      loading={loading}
+    />
+  );
+};
+
+const ApprovalsRoute = () => {
+  const { users, setUsers, loading } = useOutletContext();
+  return <UserApprovals users={users} setUsers={setUsers} loading={loading} />;
+};
+
+const UsersRoute = () => {
+  const { users, setUsers, loading } = useOutletContext();
+  return <AdminUsers users={users} setUsers={setUsers} loading={loading} />;
+};
+
+const ListingsRoute = () => {
+  const { listings, setListings, users, loading } = useOutletContext();
+  return (
+    <AdminListings
+      listings={listings}
+      setListings={setListings}
+      users={users}
+      loading={loading}
+    />
+  );
+};
+
+const ReportsRoute = () => {
+  const { users, listings, flaggedItems } = useOutletContext();
+  return (
+    <AdminReports
+      users={users}
+      listings={listings}
+      flaggedItems={flaggedItems}
+    />
+  );
+};
 
 const App = () => {
   return (
@@ -48,9 +101,17 @@ const App = () => {
           <Route path="/receipt/:orderId" element={<PaymentReceiptPage />} />
         </Route>
 
-        {/* Protected Admin Routes */}
+        {/* Protected Admin Nested Routes */}
         <Route element={<AdminProtectedRoute />}>
-          <Route path="/admin/dashboard" element={<AdminDashboard />} />
+          <Route path="/admin/dashboard" element={<AdminDashboard />}>
+            <Route index element={<Navigate to="flagged" replace />} />
+            <Route path="flagged" element={<FlaggedRoute />} />
+            <Route path="approvals" element={<ApprovalsRoute />} />
+            <Route path="users" element={<UsersRoute />} />
+            <Route path="listings" element={<ListingsRoute />} />
+            <Route path="reports" element={<ReportsRoute />} />
+            <Route path="settings" element={<AdminSettings />} />
+          </Route>
         </Route>
       </Routes>
     </div>
